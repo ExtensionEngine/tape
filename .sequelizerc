@@ -1,0 +1,12 @@
+'use strict';
+
+const { join } = require('path');
+// Disable query logging for Sequelize CLI
+const config = require('./server/common/database/config.js');
+config.logging = false;
+
+module.exports = {
+  config: join(__dirname, './server/common/database/config.js'),
+  'seeders-path': join(__dirname, './server/common/database/seeds'),
+  'migrations-path': join(__dirname, './server/common/database/migrations')
+}
