@@ -11,8 +11,23 @@ const pick = require('lodash/pick');
 const Promise = require('bluebird');
 const values = require('lodash/values');
 
-class User extends Model {
-  static fields(DataTypes) {
+const timestamps = DataTypes => ({
+  createdAt: {
+    type: DataTypes.DATE,
+    field: 'created_at'
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    field: 'updated_at'
+  },
+  deletedAt: {
+    type: DataTypes.DATE,
+    field: 'deleted_at'
+  }
+});
+
+const UserBase = {
+  fields(DataTypes) {
     return {
       email: {
         type: DataTypes.STRING,
@@ -26,8 +41,7 @@ class User extends Model {
       },
       role: {
         type: DataTypes.ENUM(values(role)),
-        allowNull: false,
-        defaultValue: role.STUDENT
+        allowNull: false
       },
       token: {
         type: DataTypes.STRING,
@@ -41,34 +55,78 @@ class User extends Model {
         type: DataTypes.STRING,
         field: 'last_name'
       },
-      createdAt: {
-        type: DataTypes.DATE,
-        field: 'created_at'
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        field: 'updated_at'
-      },
-      deletedAt: {
-        type: DataTypes.DATE,
-        field: 'deleted_at'
-      },
       profile: {
         type: DataTypes.VIRTUAL,
         get() {
           return pick(this, ['id', 'firstName', 'lastName', 'email', 'role']);
         }
-      }
+      },
+      ...timestamps(DataTypes)
     };
-  }
+  },
 
-  static options() {
+  options() {
     return {
       modelName: 'user',
       timestamps: true,
       paranoid: true,
       freezeTableName: true
     };
+  }
+};
+
+class Integration extends Model {
+  constructor(values = {}, options = {}) {
+    super({ ...values, role: role.INTEGRATION }, options);
+  }
+
+  get isIntegration() {
+    return true;
+  }
+
+  static get role() {
+    return 'INTEGRATION';
+  }
+
+  static isIntegration(model) {
+    return model.role === this.role;
+  }
+}
+Object.assign(Integration, UserBase, {
+  fields(DataTypes) {
+    return {
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        field: 'email',
+        validate: { notEmpty: true },
+        unique: { msg: 'This integration already exists.' }
+      },
+      role: {
+        type: DataTypes.ENUM(Integration.role),
+        allowNull: false,
+        defaultValue: Integration.role
+      },
+      token: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          const payload = pick(this, ['id', 'name']);
+          return jwt.sign(payload, config.secret);
+        }
+      },
+      ...timestamps(DataTypes)
+    };
+  }
+});
+
+class User extends Model {
+  constructor(...args) {
+    super(...args);
+    if (Integration.isIntegration(this)) return new Integration(...args);
+  }
+
+  get isIntegration() {
+    return false;
   }
 
   static hooks() {
@@ -118,5 +176,6 @@ class User extends Model {
     return jwt.sign(payload, config.secret, options);
   }
 }
+Object.assign(User, UserBase, { Integration });
 
 module.exports = User;

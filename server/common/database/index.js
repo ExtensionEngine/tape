@@ -47,7 +47,8 @@ function initialize() {
 }
 
 const models = {
-  User: defineModel(User)
+  User: defineModel(User),
+  Integration: defineModel(User.Integration)
 };
 
 forEach(models, model => {

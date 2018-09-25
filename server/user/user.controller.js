@@ -15,6 +15,7 @@ function list({ query: { email, emailLike, role } }, res) {
   if (email) cond.push({ email });
   if (emailLike) cond.push({ email: { [Op.iLike]: `%${emailLike}%` } });
   if (role) cond.push({ role });
+  cond.push({ role: { [Op.ne]: User.Integration.role } });
   return User.findAll({ where: { [Op.and]: cond } })
     .then(users => res.jsend.success(map(users, 'profile')));
 }
