@@ -11,11 +11,10 @@ const { BAD_REQUEST, FORBIDDEN, NOT_FOUND } = HttpStatus;
 const inputAttrs = ['email', 'role', 'firstName', 'lastName'];
 
 function list({ query: { email, emailLike, role } }, res) {
-  const cond = [];
+  const cond = [{ role: { [Op.ne]: Integration.role } }];
   if (email) cond.push({ email });
   if (emailLike) cond.push({ email: { [Op.iLike]: `%${emailLike}%` } });
   if (role) cond.push({ role });
-  cond.push({ role: { [Op.ne]: User.Integration.role } });
   return User.findAll({ where: { [Op.and]: cond } })
     .then(users => res.jsend.success(map(users, 'profile')));
 }
