@@ -5,7 +5,8 @@ const notEmpty = input => input.length > 0;
 
 module.exports = {
   alterEnum,
-  getValidator
+  getValidator,
+  setLogging
 };
 
 // NOTE: Enables safe altering of ENUM values:
@@ -28,4 +29,10 @@ function getValidator(Model, attribute) {
     return inRange(input.length, min, max) ||
       `"${attribute}" must be between ${min} and ${max} characters long`;
   };
+}
+
+function setLogging(Model, state) {
+  const { options } = Model.sequelize;
+  options.logging = state;
+  return options.logging;
 }

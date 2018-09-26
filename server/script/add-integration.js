@@ -1,14 +1,10 @@
 'use strict';
 
-const { getValidator } = require('../common/database/helpers');
+const { getValidator, setLogging } = require('../common/database/helpers');
 const { prompt } = require('inquirer');
 const { Integration } = require('../common/database');
-const set = require('lodash/set');
 
-const noop = Function.prototype;
-
-// Disable Sequelize SQL logging.
-set(Integration, 'sequelize.options.logging', noop);
+setLogging(Integration, false);
 
 const questions = [{
   type: 'input',

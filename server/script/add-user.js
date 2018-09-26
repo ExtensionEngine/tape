@@ -1,18 +1,14 @@
 'use strict';
 
-const { getValidator } = require('../common/database/helpers');
+const { getValidator, setLogging } = require('../common/database/helpers');
 const { prompt } = require('inquirer');
 const { role } = require('../../common/config');
 const { User } = require('../common/database');
 const humanize = require('humanize-string');
 const isEmail = require('is-email-like');
 const map = require('lodash/map');
-const set = require('lodash/set');
 
-const noop = Function.prototype;
-
-// Disable Sequelize SQL logging.
-set(User, 'sequelize.options.logging', noop);
+setLogging(User, false);
 
 const questions = [{
   type: 'input',
