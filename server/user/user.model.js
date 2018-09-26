@@ -4,6 +4,7 @@ const { auth: config = {} } = require('../config');
 const { Model } = require('sequelize');
 const { role } = require('../../common/config');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const logger = require('../common/logger')();
 const mail = require('../common/mail');
@@ -27,7 +28,80 @@ const timestamps = DataTypes => ({
 });
 
 const UserBase = {
-  fields(DataTypes) {
+  options() {
+    return {
+      modelName: 'user',
+      timestamps: true,
+      paranoid: true,
+      freezeTableName: true
+    };
+  }
+};
+
+class Integration extends Model {
+  constructor(values = {}, options = {}) {
+    super({ ...values, role: role.INTEGRATION }, options);
+  }
+
+  get isIntegration() {
+    return true;
+  }
+
+  static get role() {
+    return 'INTEGRATION';
+  }
+
+  static isIntegration(model) {
+    return model.role === this.role;
+  }
+
+  static fields(DataTypes) {
+    return {
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: { isEmail: true, notEmpty: true },
+        unique: { msg: 'This integration already exists.' }
+      },
+      name: {
+        type: DataTypes.STRING,
+        field: 'first_name',
+        set(name) {
+          const hash = sha1(name, { length: 14 });
+          this.setDataValue('email', `${hash}@integration.localhost`);
+          this.setDataValue('name', name);
+        },
+        validate: { notEmpty: true }
+      },
+      role: {
+        type: DataTypes.ENUM(Integration.role),
+        allowNull: false,
+        defaultValue: Integration.role
+      },
+      token: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          const payload = pick(this, ['id', 'name']);
+          return jwt.sign(payload, config.secret);
+        }
+      },
+      ...timestamps(DataTypes)
+    };
+  }
+}
+Object.assign(Integration, UserBase);
+
+class User extends Model {
+  constructor(...args) {
+    super(...args);
+    if (Integration.isIntegration(this)) return new Integration(...args);
+  }
+
+  get isIntegration() {
+    return false;
+  }
+
+  static fields(DataTypes) {
     return {
       email: {
         type: DataTypes.STRING,
@@ -63,70 +137,6 @@ const UserBase = {
       },
       ...timestamps(DataTypes)
     };
-  },
-
-  options() {
-    return {
-      modelName: 'user',
-      timestamps: true,
-      paranoid: true,
-      freezeTableName: true
-    };
-  }
-};
-
-class Integration extends Model {
-  constructor(values = {}, options = {}) {
-    super({ ...values, role: role.INTEGRATION }, options);
-  }
-
-  get isIntegration() {
-    return true;
-  }
-
-  static get role() {
-    return 'INTEGRATION';
-  }
-
-  static isIntegration(model) {
-    return model.role === this.role;
-  }
-}
-Object.assign(Integration, UserBase, {
-  fields(DataTypes) {
-    return {
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        field: 'email',
-        validate: { notEmpty: true },
-        unique: { msg: 'This integration already exists.' }
-      },
-      role: {
-        type: DataTypes.ENUM(Integration.role),
-        allowNull: false,
-        defaultValue: Integration.role
-      },
-      token: {
-        type: DataTypes.VIRTUAL,
-        get() {
-          const payload = pick(this, ['id', 'name']);
-          return jwt.sign(payload, config.secret);
-        }
-      },
-      ...timestamps(DataTypes)
-    };
-  }
-});
-
-class User extends Model {
-  constructor(...args) {
-    super(...args);
-    if (Integration.isIntegration(this)) return new Integration(...args);
-  }
-
-  get isIntegration() {
-    return false;
   }
 
   static hooks() {
@@ -179,3 +189,9 @@ class User extends Model {
 Object.assign(User, UserBase, { Integration });
 
 module.exports = User;
+
+function sha1(str, { length = 14 } = {}) {
+  const hash = crypto.createHash('sha1');
+  const result = hash.update(str, 'utf8').digest('hex');
+  return result.substring(result.length - length);
+}

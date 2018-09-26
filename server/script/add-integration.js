@@ -18,7 +18,7 @@ const questions = [{
 prompt(questions)
   .then(data => console.log() || Integration.create(data))
   .then(integration => {
-    console.log(`Integration created: ${integration.name}`);
+    console.log(`Integration created: ${integration.email}`);
     console.log(`Token: ${integration.token}`);
   })
   .catch(err => console.error(err.message) || 1)
