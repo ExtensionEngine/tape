@@ -1,7 +1,8 @@
 'use strict';
 
+const { getValidator } = require('../common/database/helpers');
 const { prompt } = require('inquirer');
-const { Integration } = require('../common/database').User;
+const { Integration } = require('../common/database');
 const set = require('lodash/set');
 
 const noop = Function.prototype;
@@ -12,7 +13,8 @@ set(Integration, 'sequelize.options.logging', noop);
 const questions = [{
   type: 'input',
   name: 'name',
-  message: 'Enter integration name:'
+  message: 'Enter integration name:',
+  validate: getValidator(Integration, 'name')
 }];
 
 prompt(questions)
