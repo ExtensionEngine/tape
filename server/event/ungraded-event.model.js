@@ -7,14 +7,17 @@ class UngradedEvent extends Model {
     return {
       userId: {
         type: DataTypes.INTEGER,
+        field: 'user_id',
         allowNull: false
       },
       cohortId: {
         type: DataTypes.SMALLINT,
+        field: 'cohort_id',
         allowNull: false
       },
       activityId: {
         type: DataTypes.INTEGER,
+        field: 'activity_id',
         allowNull: false
       },
       progress: {

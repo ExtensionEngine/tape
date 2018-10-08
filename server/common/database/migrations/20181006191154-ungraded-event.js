@@ -9,16 +9,19 @@ module.exports = {
       primaryKey: true,
       autoIncrement: true
     },
-    cohortId: {
-      type: Sequelize.SMALLINT,
-      allowNull: false
-    },
     userId: {
       type: Sequelize.INTEGER,
+      field: 'user_id',
+      allowNull: false
+    },
+    cohortId: {
+      type: Sequelize.SMALLINT,
+      field: 'cohort_id',
       allowNull: false
     },
     activityId: {
       type: Sequelize.INTEGER,
+      field: 'activity_id',
       allowNull: false
     },
     progress: {
