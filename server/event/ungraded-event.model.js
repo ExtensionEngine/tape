@@ -23,7 +23,8 @@ class UngradedEvent extends Model {
       progress: {
         type: DataTypes.TINYINT,
         defaultValue: 100,
-        allowNull: false
+        allowNull: false,
+        validate: { min: 0, max: 100 }
       },
       interactionStart: {
         type: DataTypes.DATE,
@@ -34,7 +35,8 @@ class UngradedEvent extends Model {
         field: 'interaction_end'
       },
       duration: {
-        type: DataTypes.SMALLINT
+        type: DataTypes.SMALLINT,
+        validate: { min: 1, max: 28800 }
       },
       createdAt: {
         type: DataTypes.DATE,

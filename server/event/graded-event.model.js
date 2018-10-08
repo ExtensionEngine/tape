@@ -43,7 +43,8 @@ class GradedEvent extends Model {
         field: 'interaction_end'
       },
       duration: {
-        type: DataTypes.SMALLINT
+        type: DataTypes.SMALLINT,
+        validate: { min: 1, max: 28800 }
       },
       createdAt: {
         type: DataTypes.DATE,
