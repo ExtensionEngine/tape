@@ -1,6 +1,7 @@
 'use strict';
 
 require('dotenv').config();
+require('./types');
 const log = require('../../common/logger');
 const logger = log('db', { level: log.DEBUG });
 
