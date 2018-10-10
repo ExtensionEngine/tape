@@ -22,4 +22,11 @@ function TINYINT(length) {
   }
 }
 inherits(TINYINT, DataTypes.TINYINT);
-Object.assign(DataTypes.postgres, { TINYINT });
+define(DataTypes.postgres, TINYINT);
+
+function define(dialect, Type, key = Type.key) {
+  Type.key = key;
+  if (!Type.extend) Type.extend = base => new Type(base.options);
+  Object.assign(dialect, { [Type.key]: Type });
+  return Type;
+}
