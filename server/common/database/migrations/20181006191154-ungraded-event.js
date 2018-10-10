@@ -25,7 +25,7 @@ module.exports = {
       allowNull: false
     },
     progress: {
-      type: Sequelize.TINYINT,
+      type: Sequelize.SMALLINT,
       defaultValue: 100,
       allowNull: false
     },

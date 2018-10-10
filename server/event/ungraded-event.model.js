@@ -21,7 +21,7 @@ class UngradedEvent extends Model {
         allowNull: false
       },
       progress: {
-        type: DataTypes.TINYINT,
+        type: DataTypes.SMALLINT,
         defaultValue: 100,
         allowNull: false,
         validate: { min: 0, max: 100 }
