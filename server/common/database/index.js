@@ -9,6 +9,9 @@ const Sequelize = require('sequelize');
 const Umzug = require('umzug');
 
 // Require models.
+const GradedEvent = require('../../event/graded-event.model');
+const KnowledgeGraph = require('../../knowledge-graph/knowledge-graph.model');
+const UngradedEvent = require('../../event/ungraded-event.model');
 const User = require('../../user/user.model');
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -47,7 +50,10 @@ function initialize() {
 }
 
 const models = {
-  User: defineModel(User)
+  User: defineModel(User),
+  KnowledgeGraph: defineModel(KnowledgeGraph),
+  GradedEvent: defineModel(GradedEvent),
+  UngradedEvent: defineModel(UngradedEvent)
 };
 
 forEach(models, model => {

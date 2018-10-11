@@ -1,6 +1,6 @@
 'use strict';
 
-const TABLE_NAME = 'ungraded_event';
+const TABLE_NAME = 'knowledge_graph';
 
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable(TABLE_NAME, {
@@ -9,9 +9,9 @@ module.exports = {
       primaryKey: true,
       autoIncrement: true
     },
-    userId: {
+    repositoryId: {
       type: Sequelize.INTEGER,
-      field: 'user_id',
+      field: 'repository_id',
       allowNull: false
     },
     cohortId: {
@@ -19,31 +19,23 @@ module.exports = {
       field: 'cohort_id',
       allowNull: false
     },
-    activityId: {
-      type: Sequelize.INTEGER,
-      field: 'activity_id',
+    nodes: {
+      type: Sequelize.JSONB,
       allowNull: false
-    },
-    progress: {
-      type: Sequelize.SMALLINT,
-      defaultValue: 100,
-      allowNull: false
-    },
-    interactionStart: {
-      type: Sequelize.DATE,
-      field: 'interaction_start'
-    },
-    interactionEnd: {
-      type: Sequelize.DATE,
-      field: 'interaction_end'
-    },
-    duration: {
-      type: Sequelize.SMALLINT
     },
     createdAt: {
       type: Sequelize.DATE,
       field: 'created_at',
       allowNull: false
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      field: 'updated_at',
+      allowNull: false
+    },
+    deletedAt: {
+      type: Sequelize.DATE,
+      field: 'deleted_at'
     }
   }),
   down: (queryInterface) => queryInterface.dropTable(TABLE_NAME)
