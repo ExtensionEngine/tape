@@ -8,12 +8,14 @@ class RepositoryGraph extends Model {
       repositoryId: {
         type: DataTypes.INTEGER,
         field: 'repository_id',
-        allowNull: false
+        primaryKey: true,
+        unique: 'repo_graph_pkey'
       },
       cohortId: {
         type: DataTypes.SMALLINT,
         field: 'cohort_id',
-        allowNull: false
+        primaryKey: true,
+        unique: 'repo_graph_pkey'
       },
       nodes: {
         type: DataTypes.JSONB,
