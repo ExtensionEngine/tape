@@ -1,6 +1,6 @@
 'use strict';
 
-const TABLE_NAME = 'knowledge_graph';
+const TABLE_NAME = 'repository_graph';
 
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable(TABLE_NAME, {

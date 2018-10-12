@@ -98,9 +98,9 @@ const graphs = [{
 
 module.exports = {
   up(queryInterface) {
-    return queryInterface.bulkInsert('knowledge_graph', graphs);
+    return queryInterface.bulkInsert('repository_graph', graphs);
   },
   down(queryInterface, Sequelize) {
-    return queryInterface.bulkDelete('knowledge_graph');
+    return queryInterface.bulkDelete('repository_graph');
   }
 };

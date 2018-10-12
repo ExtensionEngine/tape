@@ -2,7 +2,7 @@
 
 const { Model } = require('sequelize');
 
-class KnowledgeGraph extends Model {
+class RepositoryGraph extends Model {
   static fields(DataTypes) {
     return {
       repositoryId: {
@@ -38,11 +38,11 @@ class KnowledgeGraph extends Model {
 
   static options() {
     return {
-      tableName: 'knowledge_graph',
+      tableName: 'repository_graph',
       timestamps: true,
       freezeTableName: true
     };
   }
 }
 
-module.exports = KnowledgeGraph;
+module.exports = RepositoryGraph;
