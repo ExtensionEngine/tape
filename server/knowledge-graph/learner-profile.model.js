@@ -2,18 +2,20 @@
 
 const { Model } = require('sequelize');
 
-class KnowledgeGraph extends Model {
+class LearnerProfile extends Model {
   static fields(DataTypes) {
     return {
-      repositoryId: {
+      userId: {
         type: DataTypes.INTEGER,
-        field: 'repository_id',
-        allowNull: false
+        field: 'user_id',
+        primaryKey: true,
+        unique: 'learner_profile_pkey'
       },
       cohortId: {
         type: DataTypes.SMALLINT,
         field: 'cohort_id',
-        allowNull: false
+        primaryKey: true,
+        unique: 'learner_profile_pkey'
       },
       nodes: {
         type: DataTypes.JSONB,
@@ -38,11 +40,12 @@ class KnowledgeGraph extends Model {
 
   static options() {
     return {
-      tableName: 'knowledge_graph',
+      tableName: 'learner_profile',
       timestamps: true,
+      paranoid: true,
       freezeTableName: true
     };
   }
 }
 
-module.exports = KnowledgeGraph;
+module.exports = LearnerProfile;
