@@ -13,7 +13,7 @@ const GradedEvent = require('../../event/graded-event.model');
 const RepositoryGraph = require('../../knowledge-graph/repository-graph.model');
 const UngradedEvent = require('../../event/ungraded-event.model');
 const User = require('../../user/user.model');
-const LearnerState = require('../../knowledge-graph/learner-state.model');
+const LearnerProfile = require('../../knowledge-graph/learner-profile.model');
 
 const isProduction = process.env.NODE_ENV === 'production';
 const sequelize = createConnection(config);
@@ -55,7 +55,7 @@ const models = {
   RepositoryGraph: defineModel(RepositoryGraph),
   GradedEvent: defineModel(GradedEvent),
   UngradedEvent: defineModel(UngradedEvent),
-  LearnerState: defineModel(LearnerState)
+  LearnerProfile: defineModel(LearnerProfile)
 };
 
 forEach(models, model => {

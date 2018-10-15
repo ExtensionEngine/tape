@@ -1,6 +1,6 @@
 'use strict';
 
-const TABLE_NAME = 'learner_state';
+const TABLE_NAME = 'learner_profile';
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -37,7 +37,7 @@ module.exports = {
     await queryInterface.addConstraint(
       TABLE_NAME,
       ['user_id', 'cohort_id'],
-      { type: 'primary key', name: 'learner_state_pkey' }
+      { type: 'primary key', name: 'learner_profile_pkey' }
     );
   },
   down: (queryInterface) => queryInterface.dropTable(TABLE_NAME)

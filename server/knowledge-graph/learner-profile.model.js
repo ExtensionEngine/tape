@@ -2,20 +2,20 @@
 
 const { Model } = require('sequelize');
 
-class LearnerState extends Model {
+class LearnerProfile extends Model {
   static fields(DataTypes) {
     return {
       userId: {
         type: DataTypes.INTEGER,
         field: 'user_id',
         primaryKey: true,
-        unique: 'learner_state_pkey'
+        unique: 'learner_profile_pkey'
       },
       cohortId: {
         type: DataTypes.SMALLINT,
         field: 'cohort_id',
         primaryKey: true,
-        unique: 'learner_state_pkey'
+        unique: 'learner_profile_pkey'
       },
       nodes: {
         type: DataTypes.JSONB,
@@ -48,4 +48,4 @@ class LearnerState extends Model {
   }
 }
 
-module.exports = LearnerState;
+module.exports = LearnerProfile;
