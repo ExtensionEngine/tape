@@ -40,7 +40,7 @@ class LearnerProfile extends Model {
 
   static options() {
     return {
-      tableName: 'learner_state',
+      tableName: 'learner_profile',
       timestamps: true,
       paranoid: true,
       freezeTableName: true
