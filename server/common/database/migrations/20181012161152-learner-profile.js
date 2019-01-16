@@ -15,8 +15,9 @@ module.exports = {
         field: 'cohort_id',
         allowNull: false
       },
-      nodes: {
+      state: {
         type: Sequelize.JSONB,
+        defaultValue: {},
         allowNull: false
       },
       createdAt: {
