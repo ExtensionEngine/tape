@@ -1,11 +1,8 @@
-const clamp = require('lodash/clamp');
 const filter = require('lodash/filter');
 const get = require('lodash/get');
 const keyBy = require('lodash/keyBy');
 const map = require('lodash/map');
-const mean = require('lodash/mean');
 const pick = require('lodash/pick');
-const set = require('lodash/set');
 const reduce = require('lodash/reduce');
 
 class Graph {
@@ -36,37 +33,6 @@ class Graph {
   }
 }
 
-class StateGraph {
-  constructor(graph, state) {
-    this.graph = graph;
-    this.state = state;
-  }
-
-  getProgress(nodeId) {
-    return get(this.state, `${nodeId}.progress`, 0);
-  }
-
-  setProgress(nodeId, progress) {
-    const { graph, state } = this;
-    const node = graph.get(nodeId);
-    set(state[node.id], 'progress', clamp(progress, 0, 100));
-    const parents = graph.getParents(node);
-    if (parents.length) parents.forEach(it => this._aggregateProgress(it));
-  }
-
-  _aggregateProgress(node) {
-    const childrenState = node._c.map(id => this.getProgress(id));
-    this.setProgress(node.id, mean(childrenState));
-  }
-
-  getState() {
-    return map(this.graph.nodes, node => ({
-      ...pick(node, ['id']),
-      progress: this.getProgress(node.id)
-    }));
-  }
-}
-
 function processNode(node) {
   const content = get(node, 'content', []);
   const exams = map(get(node, 'exams', []), it => ({ ...it, type: 'EXAM' }));
@@ -93,7 +59,4 @@ function attachChildren(nodes) {
   });
 }
 
-module.exports = {
-  Graph,
-  StateGraph
-};
+module.exports = Graph;
