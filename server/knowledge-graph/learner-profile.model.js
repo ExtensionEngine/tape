@@ -57,22 +57,23 @@ class LearnerProfile extends Model {
     };
   }
 
-  updateProgress(nodeId, progress) {
+  updateProgress(nodeId, progress, date = new Date().getTime()) {
     const graph = graphService.get(this.cohortId);
     const node = graph.get(nodeId);
     if (!node) throw new Error('Node does not exist within cohort graph!');
-    const timestamp = new Date().getTime();
-    if (!this.state[node.id]) set(this.state, `${node.id}.startDate`, timestamp);
-    set(this.state, `${node.id}.progress`, clamp(progress, 0, 100));
-    set(this.state, `${node.id}.lastSession`, timestamp);
+    if (!this.state[nodeId]) set(this.state, `${nodeId}.startDate`, date);
+    const state = this.state[nodeId];
+    state.progress = clamp(progress, 0, 100);
+    state.lastSession = date;
+    if (progress === 100 && !state.completedAt) state.completedAt = date;
     const parents = graph.getParents(node);
-    if (parents.length) parents.forEach(it => this.aggregateProgress(it));
+    if (parents.length) parents.forEach(it => this.aggregateProgress(it, date));
     this.changed('state', true);
   }
 
-  aggregateProgress(node) {
+  aggregateProgress(node, timestamp) {
     const childrenState = node._c.map(id => this.getProgress(id));
-    return this.updateProgress(node.id, mean(childrenState));
+    return this.updateProgress(node.id, mean(childrenState), timestamp);
   }
 
   async getProfile() {
