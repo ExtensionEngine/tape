@@ -79,7 +79,7 @@
     "humanize-string": "^1.0.2",
     "inquirer": "^6.2.0",
     "is-email-like": "^1.0.0",
-    "joi": "^13.6.0",
+    "joi": "^13.7.0",
     "jsend": "^1.0.2",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.11",
