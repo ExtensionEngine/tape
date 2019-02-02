@@ -50,11 +50,21 @@ class LearnerProfile extends Model {
     return get(this.state, `${nodeId}.progress`, 0);
   }
 
+  getNodeState(nodeId) {
+    return {
+      ...get(this.state, nodeId, {}),
+      progress: this.getProgress(nodeId)
+    };
+  }
+
   updateProgress(nodeId, progress) {
     const graph = graphService.get(this.cohortId);
     const node = graph.get(nodeId);
     if (!node) throw new Error('Node does not exist within cohort graph!');
+    const timestamp = new Date().getTime();
+    if (!this.state[node.id]) set(this.state, `${node.id}.startDate`, timestamp);
     set(this.state, `${node.id}.progress`, clamp(progress, 0, 100));
+    set(this.state, `${node.id}.lastSession`, timestamp);
     const parents = graph.getParents(node);
     if (parents.length) parents.forEach(it => this.aggregateProgress(it));
     this.changed('state', true);
@@ -69,7 +79,7 @@ class LearnerProfile extends Model {
     const graph = await graphService.get(this.cohortId);
     return map(graph.nodes, node => ({
       ...pick(node, ['id']),
-      progress: this.getProgress(node.id)
+      ...this.getNodeState(node.id)
     }));
   }
 
