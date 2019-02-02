@@ -53,10 +53,11 @@ class LearnerProfile extends Model {
   updateProgress(nodeId, progress) {
     const graph = graphService.get(this.cohortId);
     const node = graph.get(nodeId);
-    set(this.state[node.id], 'progress', clamp(progress, 0, 100));
+    if (!node) throw new Error('Node does not exist within cohort graph!');
+    set(this.state, `${node.id}.progress`, clamp(progress, 0, 100));
     const parents = graph.getParents(node);
     if (parents.length) parents.forEach(it => this.aggregateProgress(it));
-    this.changed('state');
+    this.changed('state', true);
   }
 
   aggregateProgress(node) {
