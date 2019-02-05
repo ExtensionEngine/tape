@@ -9,10 +9,10 @@ const Sequelize = require('sequelize');
 const Umzug = require('umzug');
 
 // Require models.
+const Integration = require('../../integration/integration.model');
 const GradedEvent = require('../../event/graded-event.model');
 const RepositoryGraph = require('../../knowledge-graph/repository-graph.model');
 const UngradedEvent = require('../../event/ungraded-event.model');
-const User = require('../../user/user.model');
 const LearnerProfile = require('../../knowledge-graph/learner-profile.model');
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -51,7 +51,7 @@ function initialize() {
 }
 
 const models = {
-  User: defineModel(User),
+  Integration: defineModel(Integration),
   RepositoryGraph: defineModel(RepositoryGraph),
   GradedEvent: defineModel(GradedEvent),
   UngradedEvent: defineModel(UngradedEvent),

@@ -2,7 +2,7 @@
 
 const { auth: config = {} } = require('../../config');
 const { ExtractJwt, Strategy } = require('passport-jwt');
-const { User } = require('../database');
+const { Integration } = require('../database');
 const passport = require('passport');
 
 const jwtOptions = {
@@ -12,7 +12,7 @@ const jwtOptions = {
 };
 
 passport.use(new Strategy(jwtOptions, (payload, done) => {
-  return User.findById(payload.id)
+  return Integration.findById(payload.id)
     .then(user => done(null, user || false))
     .error(err => done(err, false));
 }));
