@@ -1,6 +1,7 @@
 'use strict';
 
 const { LearnerProfile, Sequelize } = require('../common/database');
+const graphService = require('../knowledge-graph/GraphService');
 const Op = Sequelize.Op;
 const pick = require('lodash/pick');
 
@@ -21,12 +22,20 @@ async function getGraph({ cohortId, learnerId }, res) {
   const { repositories, nodes } = learnerProfile.getProfile();
   return res.jsend.success({
     ...pick(learnerProfile, ['cohortId', 'userId', 'progress']),
+    cohortProgress: graphService.getCohortProgress(cohortId),
     repositories,
     nodes
   });
 }
 
+function getCohortProgress({ cohortId }, res) {
+  return res.jsend.success({
+    progress: graphService.getCohortProgress(cohortId)
+  });
+}
+
 module.exports = {
   getGraph,
-  listGraphs
+  listGraphs,
+  getCohortProgress
 };

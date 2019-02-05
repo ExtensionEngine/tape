@@ -99,6 +99,7 @@ class LearnerProfile extends Model {
     });
     this.changed('state', true);
     this.changed('repoState', true);
+    graphService.updateCohortProgress(this.cohortId);
   }
 
   aggregateProgress(node, timestamp) {
