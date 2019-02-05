@@ -86,10 +86,10 @@ class LearnerProfile extends Model {
     }
     // If root node, aggregate accross all repositories
     const rootNodes = graph.getRootNodes();
-    this.progress = mean(rootNodes.map(id => this.getProgress(id)));
+    this.progress = mean(rootNodes.map(({ id }) => this.getProgress(id)));
     const { repositoryId } = node;
     const repoRootNodes = filter(rootNodes, { repositoryId });
-    const repoProgress = mean(repoRootNodes.map(({ id })=> this.getProgress(id)));
+    const repoProgress = mean(repoRootNodes.map(({ id }) => this.getProgress(id)));
     if (!this.repoState[repositoryId]) {
       this.repoState[repositoryId] = { id: repositoryId };
     }
@@ -106,7 +106,7 @@ class LearnerProfile extends Model {
     return this.updateProgress(node.id, mean(childrenState), timestamp);
   }
 
-  async getProfile() {
+  getProfile() {
     const graph = graphService.get(this.cohortId);
     const nodes = map(graph.nodes, node => ({
       ...pick(node, ['id']),
