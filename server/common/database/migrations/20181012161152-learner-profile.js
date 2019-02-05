@@ -15,7 +15,17 @@ module.exports = {
         field: 'cohort_id',
         allowNull: false
       },
+      progress: {
+        type: Sequelize.FLOAT,
+        defaultValue: 0,
+        allowNull: false
+      },
       state: {
+        type: Sequelize.JSONB,
+        defaultValue: {},
+        allowNull: false
+      },
+      repoState: {
         type: Sequelize.JSONB,
         defaultValue: {},
         allowNull: false

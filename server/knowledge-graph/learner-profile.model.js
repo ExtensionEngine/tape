@@ -1,6 +1,7 @@
 'use strict';
 
 const clamp = require('lodash/clamp');
+const filter = require('lodash/filter');
 const get = require('lodash/get');
 const graphService = require('./GraphService');
 const map = require('lodash/map');
@@ -8,6 +9,7 @@ const mean = require('lodash/mean');
 const { Model } = require('sequelize');
 const pick = require('lodash/pick');
 const set = require('lodash/set');
+const toArray = require('lodash/toArray');
 
 class LearnerProfile extends Model {
   static fields(DataTypes) {
@@ -24,7 +26,17 @@ class LearnerProfile extends Model {
         primaryKey: true,
         unique: 'learner_profile_pkey'
       },
+      progress: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0,
+        allowNull: false
+      },
       state: {
+        type: DataTypes.JSONB,
+        defaultValue: {},
+        allowNull: false
+      },
+      repoState: {
         type: DataTypes.JSONB,
         defaultValue: {},
         allowNull: false
@@ -67,8 +79,26 @@ class LearnerProfile extends Model {
     state.lastSession = date;
     if (progress === 100 && !state.completedAt) state.completedAt = date;
     const parents = graph.getParents(node);
-    if (parents.length) parents.forEach(it => this.aggregateProgress(it, date));
+    // If leaf node, aggregate up (parent nodes)
+    if (parents.length) {
+      parents.forEach(it => this.aggregateProgress(it, date));
+      return;
+    }
+    // If root node, aggregate accross all repositories
+    const rootNodes = graph.getRootNodes();
+    this.progress = mean(rootNodes.map(id => this.getProgress(id)));
+    const { repositoryId } = node;
+    const repoRootNodes = filter(rootNodes, { repositoryId });
+    const repoProgress = mean(repoRootNodes.map(({ id })=> this.getProgress(id)));
+    if (!this.repoState[repositoryId]) {
+      this.repoState[repositoryId] = { id: repositoryId };
+    }
+    Object.assign(this.repoState[repositoryId], {
+      progress: repoProgress,
+      lastSession: date
+    });
     this.changed('state', true);
+    this.changed('repoState', true);
   }
 
   aggregateProgress(node, timestamp) {
@@ -77,11 +107,12 @@ class LearnerProfile extends Model {
   }
 
   async getProfile() {
-    const graph = await graphService.get(this.cohortId);
-    return map(graph.nodes, node => ({
+    const graph = graphService.get(this.cohortId);
+    const nodes = map(graph.nodes, node => ({
       ...pick(node, ['id']),
       ...this.getNodeState(node.id)
     }));
+    return { repositories: toArray(this.repoState), nodes };
   }
 
   static options() {

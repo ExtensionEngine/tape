@@ -26,7 +26,7 @@ class GraphService {
   }
 
   add({ cohortId, repositoryId, nodes }) {
-    const graph = new Graph(nodes);
+    const graph = new Graph(repositoryId, nodes);
     const existing = this.get(cohortId, repositoryId);
     if (existing) {
       existing.graph = graph;

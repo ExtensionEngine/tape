@@ -6,9 +6,10 @@ const pick = require('lodash/pick');
 const reduce = require('lodash/reduce');
 
 class Graph {
-  constructor(nodes = []) {
+  constructor(repositoryId, nodes = []) {
     nodes = reduce(nodes, (acc, it) => acc.concat(processNode(it)), []);
     attachChildren(nodes);
+    nodes.forEach(it => (it.repositoryId = repositoryId));
     this.nodes = keyBy(nodes, 'id');
   }
 
@@ -24,6 +25,10 @@ class Graph {
   getChildren(node) {
     const children = get(node, '_c', []);
     return children.map(id => this.get(id));
+  }
+
+  getRootNodes() {
+    return filter(this.nodes, it => !get(it, '_p', []).length);
   }
 
   static merge(graphs = []) {
