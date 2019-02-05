@@ -10,7 +10,8 @@ router
   .use('/:cohortId/graph', graph.router)
   .use('/:cohortId/event', event.router)
   .use('/:cohortId/learner/:learnerId*', parseLearnerId)
-  .get('/:cohortId/learner/:learnerId', ctrl.getLearnerGraph);
+  .get('/:cohortId/learner/:learnerId', ctrl.getGraph)
+  .get('/:cohortId/learner/', ctrl.listGraphs);
 
 module.exports = {
   path: '/cohort',
