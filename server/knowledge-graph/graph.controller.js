@@ -24,6 +24,12 @@ function upsert({ cohortId, body }, res) {
     .catch(err => res.status(BAD_REQUEST).json({ errors: processError(err) }));
 }
 
+function destroy({ cohortId, repositoryId }, res) {
+  return RepositoryGraph.destroy({ where: { cohortId, repositoryId } })
+    .then(() => graphService.remove(cohortId, repositoryId))
+    .then(() => res.end());
+}
+
 function processError(error) {
   return {
     message: get(error, 'cause.name') || error.message || 'Error',
@@ -33,5 +39,6 @@ function processError(error) {
 
 module.exports = {
   getCohortGraph,
-  upsert
+  upsert,
+  destroy
 };
