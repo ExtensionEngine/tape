@@ -5,11 +5,13 @@ const Graph = require('./Graph');
 const map = require('lodash/map');
 const Promise = require('bluebird');
 const removeBy = require('lodash/remove');
+const throttle = require('lodash/throttle');
 
 class GraphService {
   constructor() {
     this.graphs = [];
     this.cohortGraphs = {};
+    this.updateCohortProgress = this.throttle(this._updateCohortProgress, 10000);
     this.initialized = new Promise(resolve => {
       this.initialize = async db => {
         this.db = db;
@@ -41,9 +43,31 @@ class GraphService {
     this._onChange(cohortId);
   }
 
+  getCohortProgress(cohortId) {
+    return get(this.cohortGraphs, `${cohortId}.progress`, 0);
+  }
+
+  async _updateCohortProgress(cohortId) {
+    const { LearnerProfile } = this.db;
+    const opts = { where: { cohortId } };
+    const progress = await LearnerProfile.aggregate('progress', 'avg', opts);
+    this.cohortGraphs[cohortId].progress = progress;
+  }
+
   _onChange(cohortId) {
     const graphs = map(filter(this.graphs, { cohortId }), 'graph');
     this.cohortGraphs[cohortId] = Graph.merge(graphs);
+    this.updateCohortProgress(cohortId);
+  }
+
+  throttle(func, duration) {
+    const _delays = {};
+    return id => {
+      if (!_delays[id]) {
+        _delays[id] = throttle(() => func.call(this, id), duration);
+      }
+      _delays[id]();
+    };
   }
 }
 
