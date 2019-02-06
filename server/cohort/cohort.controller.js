@@ -5,10 +5,10 @@ const graphService = require('../knowledge-graph/GraphService');
 const Op = Sequelize.Op;
 const pick = require('lodash/pick');
 
-async function listGraphs({ cohortId, query }, res) {
+async function listGraphs({ cohortId, query, options }, res) {
   const where = { cohortId };
   if (query.userId) where.userId = { [Op.in]: query.userId };
-  const profiles = await LearnerProfile.findAll({ where });
+  const profiles = await LearnerProfile.findAll({ where, ...options });
   const data = profiles.map(it => ({
     ...pick(it, ['cohortId', 'userId', 'progress']),
     ...it.getProfile()
