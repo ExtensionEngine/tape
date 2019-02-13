@@ -25,7 +25,7 @@ async function reportGradedEvent({ cohortId, body }, res) {
 
 function calculateDuration({ interactionStart, interactionEnd }) {
   if (!interactionStart || !interactionEnd) return null;
-  return interactionEnd - interactionStart;
+  return Math.round((interactionEnd - interactionStart) / 1000);
 }
 
 module.exports = {
