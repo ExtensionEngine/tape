@@ -1,9 +1,14 @@
 'use strict';
 
 const { LearnerProfile, Sequelize } = require('../common/database');
+const difference = require('lodash/difference');
 const graphService = require('../knowledge-graph/GraphService');
+const HttpStatus = require('http-status');
+const map = require('lodash/map');
 const Op = Sequelize.Op;
 const pick = require('lodash/pick');
+
+const { OK } = HttpStatus;
 
 async function listGraphs({ cohortId, query, options }, res) {
   const where = { cohortId };
@@ -34,8 +39,18 @@ function getCohortProgress({ cohortId }, res) {
   });
 }
 
+async function registerLearners({ cohortId, body }, res) {
+  const { userIds } = body;
+  const where = { cohortId, userId: { [Op.in]: userIds } };
+  const existing = await LearnerProfile.findAll({ where, attributes: ['userId'] });
+  const diff = difference(userIds, map(existing, 'userId'));
+  return LearnerProfile.bulkCreate(map(diff, userId => ({ cohortId, userId })))
+    .then(() => res.status(OK).end());
+}
+
 module.exports = {
   getGraph,
   listGraphs,
-  getCohortProgress
+  getCohortProgress,
+  registerLearners
 };
