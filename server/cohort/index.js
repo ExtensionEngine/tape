@@ -10,6 +10,7 @@ router
   .use('/:cohortId/graph', graph.router)
   .use('/:cohortId/event', event.router)
   .get('/:cohortId/progress', ctrl.getCohortProgress)
+  .post('/:cohortId/register', ctrl.registerLearners)
   .use('/:cohortId/learner/:learnerId*', parseLearnerId)
   .get('/:cohortId/learner/:learnerId', ctrl.getGraph)
   .get('/:cohortId/learner/', ctrl.listGraphs);
