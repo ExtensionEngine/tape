@@ -6,6 +6,7 @@ const map = require('lodash/map');
 const Promise = require('bluebird');
 const removeBy = require('lodash/remove');
 const throttle = require('lodash/throttle');
+const uniq = require('lodash/uniq');
 
 class GraphService {
   constructor() {
@@ -54,9 +55,27 @@ class GraphService {
     this.cohortGraphs[cohortId].progress = progress;
   }
 
-  _onChange(cohortId) {
+  async _updateLearnersProgress(cohortId) {
+    const { LearnerProfile } = this.db;
+    const profiles = await LearnerProfile.findAll({ where: { cohortId } });
+    const graph = this.get(cohortId);
+    const leafs = graph.getLeafNodes();
+    // Trigger aggregations for level above leafs
+    // Will be propagated to parent nodes
+    const targetNodeIds = uniq(leafs.reduce((acc, it) => acc.concat(it._p), []));
+    const targetNodes = map(targetNodeIds, id => graph.get(id));
+    profiles.forEach(profile => {
+      targetNodes.forEach(node => {
+        profile.aggregateProgress(node);
+      });
+    });
+    return Promise.map(profiles, it => it.save());
+  }
+
+  async _onChange(cohortId) {
     const graphs = map(filter(this.graphs, { cohortId }), 'graph');
     this.cohortGraphs[cohortId] = Graph.merge(graphs);
+    await this._updateLearnersProgress(cohortId);
     this.updateCohortProgress(cohortId);
   }
 

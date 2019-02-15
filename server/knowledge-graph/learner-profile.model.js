@@ -62,6 +62,11 @@ class LearnerProfile extends Model {
     return get(this.state, `${nodeId}.progress`, 0);
   }
 
+  findOrCreateNode(nodeId) {
+    if (!this.state[nodeId]) this.state[nodeId] = {};
+    return this.state[nodeId];
+  }
+
   getNodeState(nodeId) {
     return {
       ...get(this.state, nodeId, {}),
@@ -69,15 +74,17 @@ class LearnerProfile extends Model {
     };
   }
 
-  updateProgress(nodeId, progress, date = new Date().getTime()) {
+  updateProgress(nodeId, progress, date) {
     const graph = graphService.get(this.cohortId);
     const node = graph.get(nodeId);
     if (!node) throw new Error('Node does not exist within cohort graph!');
-    if (!this.state[nodeId]) set(this.state, `${nodeId}.startDate`, date);
-    const state = this.state[nodeId];
+    const state = this.findOrCreateNode(nodeId);
     state.progress = clamp(progress, 0, 100);
-    state.lastSession = date;
-    if (progress === 100 && !state.completedAt) state.completedAt = date;
+    if (date) {
+      state.startDate = state.startDate || date;
+      state.lastSession = date;
+      if (state.progress === 100 && !state.completedAt) state.completedAt = date;
+    }
     const parents = graph.getParents(node);
     // If leaf node, aggregate up (parent nodes)
     if (parents.length) {

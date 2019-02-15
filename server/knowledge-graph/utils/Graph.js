@@ -31,6 +31,10 @@ class Graph {
     return filter(this.nodes, it => !get(it, '_p', []).length);
   }
 
+  getLeafNodes() {
+    return filter(this.nodes, it => !get(it, '_c', []).length);
+  }
+
   static merge(graphs = []) {
     const graph = new Graph();
     graph.nodes = Object.assign({}, ...map(graphs, 'nodes'));
