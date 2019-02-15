@@ -1,7 +1,7 @@
 'use strict';
 
 const bluebird = require('bluebird');
-const graphService = require('./knowledge-graph/GraphService');
+const graphService = require('./knowledge-graph/graph.service');
 const { promisify } = require('util');
 const sequelize = require('sequelize');
 
@@ -19,7 +19,7 @@ const runServer = promisify(app.listen.bind(app));
 const address = `http://${config.ip}:${config.port}`;
 
 database.initialize()
-  .then(migrations => logger.info('🗄️  Database initialized'))
+  .then(() => logger.info('🗄️  Database initialized'))
   .then(() => graphService.initialize(database))
   .then(() => runServer(config.port, config.ip))
   .then(() => logger.info(`✈️  Server listening on ${address}`))

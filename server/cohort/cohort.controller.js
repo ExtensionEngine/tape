@@ -2,7 +2,7 @@
 
 const { LearnerProfile, Sequelize } = require('../common/database');
 const difference = require('lodash/difference');
-const graphService = require('../knowledge-graph/GraphService');
+const graphService = require('../knowledge-graph/graph.service');
 const HttpStatus = require('http-status');
 const map = require('lodash/map');
 const Op = Sequelize.Op;

@@ -3,7 +3,7 @@
 const clamp = require('lodash/clamp');
 const filter = require('lodash/filter');
 const get = require('lodash/get');
-const graphService = require('./GraphService');
+const graphService = require('./graph.service');
 const map = require('lodash/map');
 const mean = require('lodash/mean');
 const { Model } = require('sequelize');

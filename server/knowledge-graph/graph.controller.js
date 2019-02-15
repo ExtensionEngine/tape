@@ -1,10 +1,10 @@
 'use strict';
 
 const get = require('lodash/get');
-const graphService = require('./GraphService');
+const graphService = require('./graph.service');
 const HttpStatus = require('http-status');
 const { RepositoryGraph } = require('../common/database');
-const validate = require('./validation');
+const validate = require('./utils/validation');
 
 const { BAD_REQUEST, OK } = HttpStatus;
 
