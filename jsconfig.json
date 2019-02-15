@@ -1,13 +1,8 @@
 {
   "compilerOptions": {
-    "//NOTE": "This DOES not work with `.vue` files!",
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["./client/*"],
-    }
+    "target": "ES6"
   },
   "exclude": [
-    "node_modules",
-    "dist"
+    "node_modules"
   ]
 }

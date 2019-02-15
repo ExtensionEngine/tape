@@ -8,7 +8,6 @@ module.exports = {
   },
   // https://github.com/Flet/eslint-config-semistandard
   extends: ['semistandard'],
-  // required to lint *.vue files
   rules: {
     indent: ['error', 2, {
       SwitchCase: 1,
