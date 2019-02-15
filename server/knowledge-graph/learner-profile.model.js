@@ -78,8 +78,9 @@ class LearnerProfile extends Model {
     const graph = graphService.get(this.cohortId);
     const node = graph.get(nodeId);
     if (!node) throw new Error('Node does not exist within cohort graph!');
+    progress = clamp(progress, 0, 100);
     const state = this.findOrCreateNode(nodeId);
-    state.progress = clamp(progress, 0, 100);
+    state.progress = state.progress > progress ? state.progress : progress;
     if (date) {
       state.startDate = state.startDate || date;
       state.lastSession = date;
