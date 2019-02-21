@@ -117,6 +117,7 @@ class LearnerProfile extends Model {
 
   getProfile() {
     const graph = graphService.get(this.cohortId);
+    if (!graph) return;
     const nodes = map(graph.nodes, node => ({
       ...pick(node, ['id']),
       ...this.getNodeState(node.id)
