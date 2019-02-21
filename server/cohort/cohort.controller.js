@@ -10,27 +10,25 @@ const pick = require('lodash/pick');
 
 const { OK } = HttpStatus;
 
-async function listGraphs({ cohortId, query, options }, res) {
+const processOutput = profile => ({
+  ...pick(profile, ['cohortId', 'userId', 'progress']),
+  ...profile.getProfile()
+});
+
+function listGraphs({ cohortId, query, options }, res) {
   const where = { cohortId };
-  if (query.userId) where.userId = { [Op.in]: query.userId };
   const opts = { where, ...options };
-  const { rows, count } = await LearnerProfile.findAndCountAll(opts);
-  const data = rows.map(it => ({
-    ...pick(it, ['cohortId', 'userId', 'progress']),
-    ...it.getProfile()
-  }));
-  return res.jsend.success({ items: data, total: count });
+  if (query.userId) where.userId = { [Op.in]: query.userId };
+  return LearnerProfile.findAndCountAll(opts).then(({ rows, count }) => {
+    return res.jsend.success({ items: rows.map(processOutput), total: count });
+  });
 }
 
-async function getGraph({ cohortId, learnerId }, res) {
+function getGraph({ cohortId, learnerId }, res) {
   const where = { cohortId, userId: learnerId };
-  const [learnerProfile] = await LearnerProfile.findOrCreate({ where });
-  const { repositories, nodes } = learnerProfile.getProfile();
-  return res.jsend.success({
-    ...pick(learnerProfile, ['cohortId', 'userId', 'progress']),
-    cohortProgress: graphService.getCohortProgress(cohortId),
-    repositories,
-    nodes
+  return LearnerProfile.findOrCreate({ where }).spread(profile => {
+    const cohortProgress = graphService.getCohortProgress(cohortId);
+    return res.jsend.success({ ...processOutput(profile), cohortProgress });
   });
 }
 
