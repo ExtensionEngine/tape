@@ -13,12 +13,13 @@ const { OK } = HttpStatus;
 async function listGraphs({ cohortId, query, options }, res) {
   const where = { cohortId };
   if (query.userId) where.userId = { [Op.in]: query.userId };
-  const profiles = await LearnerProfile.findAll({ where, ...options });
-  const data = profiles.map(it => ({
+  const opts = { where, ...options };
+  const { rows, count } = await LearnerProfile.findAndCountAll(opts);
+  const data = rows.map(it => ({
     ...pick(it, ['cohortId', 'userId', 'progress']),
     ...it.getProfile()
   }));
-  return res.jsend.success(data);
+  return res.jsend.success({ items: data, total: count });
 }
 
 async function getGraph({ cohortId, learnerId }, res) {
