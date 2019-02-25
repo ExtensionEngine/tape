@@ -1,6 +1,5 @@
 'use strict';
 
-const auth = require('./common/auth').authenticate('jwt');
 const express = require('express');
 const user = require('./user');
 
