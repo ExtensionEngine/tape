@@ -7,6 +7,4 @@
 [![js semistandard style](https://badgen.net/badge/code%20style/semistandard/pink)](https://github.com/Flet/semistandard)
 [![Open Source Love](https://badges.frapsoft.com/os/v2/open-source.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
-:warning: _Dynamic badges won't work until this repo gets public._
-
 >Under construction :construction:
