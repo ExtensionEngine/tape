@@ -13,7 +13,7 @@ router
   .post('/:cohortId/register', ctrl.registerLearners)
   .use('/:cohortId/learner/:learnerId*', parseLearnerId)
   .get('/:cohortId/learner/:learnerId', ctrl.getGraph)
-  .get('/:cohortId/learner/', ctrl.listGraphs);
+  .get('/:cohortId/learner/', ctrl.listLearners);
 
 module.exports = {
   path: '/cohort',

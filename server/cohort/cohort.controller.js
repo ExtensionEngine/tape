@@ -10,17 +10,19 @@ const pick = require('lodash/pick');
 
 const { OK } = HttpStatus;
 
-const processOutput = profile => ({
-  ...pick(profile, ['cohortId', 'userId', 'progress']),
-  ...profile.getProfile()
-});
+const processOutput = (profile, includeGraph) => {
+  const output = pick(profile, ['cohortId', 'userId', 'progress']);
+  if (includeGraph) Object.assign(output, profile.getGraph());
+  return output;
+};
 
-function listGraphs({ cohortId, query, options }, res) {
+function listLearners({ cohortId, query, options }, res) {
   const where = { cohortId };
   const opts = { where, ...options };
   if (query.userId) where.userId = { [Op.in]: query.userId };
   return LearnerProfile.findAndCountAll(opts).then(({ rows, count }) => {
-    return res.jsend.success({ items: rows.map(processOutput), total: count });
+    const items = rows.map(it => processOutput(it, query.includeGraph))
+    return res.jsend.success({ items, total: count });
   });
 }
 
@@ -28,7 +30,7 @@ function getGraph({ cohortId, learnerId }, res) {
   const where = { cohortId, userId: learnerId };
   return LearnerProfile.findOrCreate({ where }).spread(profile => {
     const cohortProgress = graphService.getCohortProgress(cohortId);
-    return res.jsend.success({ ...processOutput(profile), cohortProgress });
+    return res.jsend.success({ ...processOutput(profile, true), cohortProgress });
   });
 }
 
@@ -49,7 +51,7 @@ async function registerLearners({ cohortId, body }, res) {
 
 module.exports = {
   getGraph,
-  listGraphs,
+  listLearners,
   getCohortProgress,
   registerLearners
 };
