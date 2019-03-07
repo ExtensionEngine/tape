@@ -1,3 +1,5 @@
+'use strict';
+
 const { utils: { parsePath } } = require('./database');
 const pick = require('lodash/pick');
 
