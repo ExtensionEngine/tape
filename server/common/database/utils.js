@@ -1,11 +1,17 @@
-const isString = require('lodash/isString');
-const mapValues = require('lodash/mapValues');
-const Sequelize = require('sequelize');
+'use strict';
 
-const dbColumn = val => Sequelize.col(val);
+const { Sequelize, Utils: { SequelizeMethod } } = require('sequelize');
+const get = require('lodash/get');
+const mapValues = require('lodash/mapValues');
+
+const dbColumn = (col, Model) => {
+  if (col instanceof SequelizeMethod) return col;
+  const name = get(Model, `attributes.${col}.field`, col);
+  return Sequelize.col(name);
+};
 
 function parsePath(path, Model) {
-  if (!path.includes('.')) return [path];
+  if (!path.includes('.')) return [dbColumn(path, Model)];
   const [alias, ...columns] = path.split('.');
   const { target: model } = Model.associations[alias];
   return [{ model, as: alias }, ...parsePath(columns.join('.'), model)];
@@ -20,11 +26,13 @@ const sqlFunctions = {
 };
 
 module.exports = {
-  dbColumn,
   parsePath,
-  ...mapValues(sqlFunctions, buildSqlFunc)
+  build: Model => ({
+    column: (col, model) => dbColumn(col, model || Model),
+    ...mapValues(sqlFunctions, it => buildSqlFunc(it, Model))
+  })
 };
 
-function buildSqlFunc(name) {
-  return col => Sequelize.fn(name, isString(col) ? dbColumn(col) : col);
+function buildSqlFunc(name, Model) {
+  return (col, model) => Sequelize.fn(name, dbColumn(col, model || Model));
 }
