@@ -3,9 +3,10 @@ const HttpStatus = require('http-status');
 const map = require('lodash/map');
 const pick = require('lodash/pick');
 
-const { GradedEvent, LearnerProfile, UngradedEvent, utils } = db;
+const { GradedEvent, LearnerProfile, UngradedEvent, Sequelize, utils } = db;
 const fn = utils.build(UngradedEvent);
 const { CREATED } = HttpStatus;
+const { Op } = Sequelize;
 const commonAttrs = ['userId', 'activityId', 'interactionStart', 'interactionEnd'];
 const ungradedAttrs = ['progress'].concat(commonAttrs);
 const gradedAttrs = ['questionId', 'isCorrect', 'answer'].concat(commonAttrs);
