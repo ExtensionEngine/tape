@@ -19,7 +19,7 @@ const parseResult = it => ({
 
 
 function listUngradedEvents({ cohortId, query, options }, res) {
-  const { activityIds, uniqueViews } = query;
+  const { activityIds, uniqueViews, fromDate, toDate } = query;
   const group = [fn.column('activityId')];
   const views = uniqueViews ? fn.distinct('userId') : fn.column('userId');
   const attributes = [
@@ -29,6 +29,8 @@ function listUngradedEvents({ cohortId, query, options }, res) {
     [fn.max('interactionEnd'), 'lastViewed'],
   ];
   const where = { cohortId };
+  if (fromDate) where.interactionStart = { [Op.gte]: fromDate };
+  if (toDate) where.interactionEnd = { [Op.lte]: toDate };
   if (activityIds) where.activityId = { [Op.in]: activityIds };
   const opts = { where, ...options, group, attributes, raw: true };
   return UngradedEvent.findAndCountAll(opts).then(({ rows, count }) => {
