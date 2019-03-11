@@ -10,7 +10,7 @@ const pick = require('lodash/pick');
 
 const { OK } = HttpStatus;
 
-async function listGraphs({ cohortId, query, options }, res) {
+async function listLearnerStats({ cohortId, query, options }, res) {
   const where = { cohortId };
   if (query.userId) where.userId = { [Op.in]: query.userId };
   const profiles = await LearnerProfile.findAll({ where, ...options });
@@ -21,7 +21,7 @@ async function listGraphs({ cohortId, query, options }, res) {
   return res.jsend.success(data);
 }
 
-async function getGraph({ cohortId, learnerId }, res) {
+async function getLearnerStats({ cohortId, learnerId }, res) {
   const where = { cohortId, userId: learnerId };
   const [learnerProfile] = await LearnerProfile.findOrCreate({ where });
   const { repositories, nodes } = learnerProfile.getProfile();
@@ -49,8 +49,8 @@ async function registerLearners({ cohortId, body }, res) {
 }
 
 module.exports = {
-  getGraph,
-  listGraphs,
+  getLearnerStats,
+  listLearnerStats,
   getCohortProgress,
   registerLearners
 };

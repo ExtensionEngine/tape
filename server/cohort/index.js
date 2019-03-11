@@ -13,8 +13,8 @@ router
   .use('/:cohortId/event', event.router)
   .get('/:cohortId/progress', ctrl.getCohortProgress)
   .post('/:cohortId/register', ctrl.registerLearners)
-  .get('/:cohortId/learner/:learnerId', ctrl.getGraph)
-  .get('/:cohortId/learner/', ctrl.listGraphs);
+  .get('/:cohortId/learner/:learnerId', ctrl.getLearnerStats)
+  .get('/:cohortId/learner/', ctrl.listLearnerStats);
 
 module.exports = {
   path: '/cohort',
