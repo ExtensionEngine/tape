@@ -20,11 +20,13 @@ module.exports = {
     createdAt: {
       type: Sequelize.DATE,
       field: 'created_at',
+      defaultValue: Sequelize.fn('NOW'),
       allowNull: false
     },
     updatedAt: {
       type: Sequelize.DATE,
       field: 'updated_at',
+      defaultValue: Sequelize.fn('NOW'),
       allowNull: false
     },
     deletedAt: {

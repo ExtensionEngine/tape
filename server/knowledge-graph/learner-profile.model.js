@@ -8,7 +8,6 @@ const map = require('lodash/map');
 const mean = require('lodash/mean');
 const { Model } = require('sequelize');
 const pick = require('lodash/pick');
-const set = require('lodash/set');
 const toArray = require('lodash/toArray');
 
 class LearnerProfile extends Model {
@@ -38,6 +37,7 @@ class LearnerProfile extends Model {
       },
       repoState: {
         type: DataTypes.JSONB,
+        field: 'repo_state',
         defaultValue: {},
         allowNull: false
       },
