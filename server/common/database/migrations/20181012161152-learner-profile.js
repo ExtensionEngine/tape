@@ -27,6 +27,7 @@ module.exports = {
       },
       repoState: {
         type: Sequelize.JSONB,
+        field: 'repo_state',
         defaultValue: {},
         allowNull: false
       },

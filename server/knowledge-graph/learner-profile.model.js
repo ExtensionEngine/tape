@@ -38,6 +38,7 @@ class LearnerProfile extends Model {
       },
       repoState: {
         type: DataTypes.JSONB,
+        field: 'repo_state',
         defaultValue: {},
         allowNull: false
       },
