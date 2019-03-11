@@ -5,7 +5,7 @@ const filter = require('lodash/filter');
 const get = require('lodash/get');
 const graphService = require('./graph.service');
 const map = require('lodash/map');
-const mean = require('lodash/mean');
+const meanBy = require('lodash/meanBy');
 const { Model } = require('sequelize');
 const pick = require('lodash/pick');
 const toArray = require('lodash/toArray');
@@ -94,10 +94,10 @@ class LearnerProfile extends Model {
     }
     // If root node, aggregate accross all repositories
     const rootNodes = graph.getRootNodes();
-    this.progress = mean(rootNodes.map(({ id }) => this.getProgress(id)));
+    this.progress = meanBy(rootNodes, ({ id }) => this.getProgress(id));
     const { repositoryId } = node;
     const repoRootNodes = filter(rootNodes, { repositoryId });
-    const repoProgress = mean(repoRootNodes.map(({ id }) => this.getProgress(id)));
+    const repoProgress = meanBy(repoRootNodes, ({ id }) => this.getProgress(id));
     if (!this.repoState[repositoryId]) {
       this.repoState[repositoryId] = { id: repositoryId };
     }
@@ -111,8 +111,8 @@ class LearnerProfile extends Model {
   }
 
   aggregateProgress(node, timestamp) {
-    const childrenState = node._c.map(id => this.getProgress(id));
-    return this.updateProgress(node.id, mean(childrenState), timestamp);
+    const progress = meanBy(node._c, id => this.getProgress(id));
+    return this.updateProgress(node.id, progress, timestamp);
   }
 
   getGraph() {
