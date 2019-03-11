@@ -30,15 +30,15 @@ function destroy({ cohortId, repositoryId }, res) {
     .then(() => res.end());
 }
 
+module.exports = {
+  getCohortGraph,
+  upsert,
+  destroy
+};
+
 function processError(error) {
   return {
     message: get(error, 'cause.name') || error.message || 'Error',
     info: get(error, 'cause.details') || get(error, 'errors') || error
   };
 }
-
-module.exports = {
-  getCohortGraph,
-  upsert,
-  destroy
-};
