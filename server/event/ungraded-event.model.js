@@ -40,8 +40,7 @@ class UngradedEvent extends Model {
       },
       createdAt: {
         type: DataTypes.DATE,
-        field: 'created_at',
-        defaultValue: DataTypes.NOW
+        field: 'created_at'
       }
     };
   }
@@ -49,7 +48,8 @@ class UngradedEvent extends Model {
   static options() {
     return {
       tableName: 'ungraded_event',
-      timestamps: false,
+      timestamps: true,
+      updatedAt: false,
       freezeTableName: true
     };
   }

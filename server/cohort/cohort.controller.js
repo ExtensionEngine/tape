@@ -16,7 +16,7 @@ const processOutput = (profile, includeGraph) => {
   return output;
 };
 
-function listLearners({ cohortId, query, options }, res) {
+function listLearnerStats({ cohortId, query, options }, res) {
   const where = { cohortId };
   const opts = { where, ...options };
   if (query.userId) where.userId = { [Op.in]: query.userId };
@@ -26,7 +26,7 @@ function listLearners({ cohortId, query, options }, res) {
   });
 }
 
-function getGraph({ cohortId, learnerId }, res) {
+async function getLearnerStats({ cohortId, learnerId }, res) {
   const where = { cohortId, userId: learnerId };
   return LearnerProfile.findOrCreate({ where }).spread(profile => {
     const cohortProgress = graphService.getCohortProgress(cohortId);
@@ -50,8 +50,8 @@ async function registerLearners({ cohortId, body }, res) {
 }
 
 module.exports = {
-  getGraph,
-  listLearners,
+  getLearnerStats,
+  listLearnerStats,
   getCohortProgress,
   registerLearners
 };

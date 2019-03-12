@@ -62,7 +62,7 @@ class GraphService {
     const leafs = graph.getLeafNodes();
     // Trigger aggregations for level above leafs
     // Will be propagated to parent nodes
-    const targetNodeIds = uniq(leafs.reduce((acc, it) => acc.concat(it._p), []));
+    const targetNodeIds = uniq(map(leafs, '_p'));
     const targetNodes = map(targetNodeIds, id => graph.get(id));
     profiles.forEach(profile => {
       targetNodes.forEach(node => {

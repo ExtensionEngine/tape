@@ -48,8 +48,7 @@ class GradedEvent extends Model {
       },
       createdAt: {
         type: DataTypes.DATE,
-        field: 'created_at',
-        defaultValue: DataTypes.NOW
+        field: 'created_at'
       }
     };
   }
@@ -57,7 +56,8 @@ class GradedEvent extends Model {
   static options() {
     return {
       tableName: 'graded_event',
-      timestamps: false,
+      timestamps: true,
+      updatedAt: false,
       freezeTableName: true
     };
   }
