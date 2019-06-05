@@ -4,7 +4,6 @@ const map = require('lodash/map');
 const pick = require('lodash/pick');
 
 const { GradedEvent, LearnerProfile, UngradedEvent, Sequelize, utils } = db;
-const fn = utils.build(UngradedEvent);
 const { CREATED } = HttpStatus;
 const { Op } = Sequelize;
 const commonAttrs = ['userId', 'activityId', 'interactionStart', 'interactionEnd'];
@@ -17,7 +16,15 @@ const parseResult = it => ({
   views: parseInt(it.views, 10)
 });
 
+const parseGradedResult = it => ({
+  ...it,
+  avgDuration: parseFloat(it.avgDuration),
+  submissions: parseInt(it.submissions, 10),
+  correct: parseInt(it.correct, 10)
+});
+
 function listUngradedEvents({ cohortId, query, options }, res) {
+  const fn = utils.build(UngradedEvent);
   const { activityIds, uniqueViews, fromDate, toDate } = query;
   const group = [fn.column('activityId')];
   const views = uniqueViews ? fn.distinct('userId') : fn.column('userId');
@@ -34,6 +41,29 @@ function listUngradedEvents({ cohortId, query, options }, res) {
   const opts = { where, ...options, group, attributes, raw: true };
   return UngradedEvent.findAndCountAll(opts).then(({ rows, count }) => {
     const items = map(rows, parseResult);
+    return res.jsend.success(({ items, total: count.length }));
+  });
+}
+
+function listGradedEvents({ cohortId, query, options }, res) {
+  const fn = utils.build(GradedEvent);
+  const { activityIds, fromDate, toDate } = query;
+  const group = [fn.column('questionId'), fn.column('activityId')];
+  const attributes = [
+    [fn.column('questionId'), 'questionId'],
+    [fn.column('activityId'), 'activityId'],
+    [fn.sum(Sequelize.cast(fn.column('isCorrect'), 'integer')), 'correct'],
+    [fn.count(fn.distinct('userId')), 'submissions'],
+    [fn.average('duration'), 'avgDuration'],
+    [fn.max('interactionEnd'), 'lastSubmitted']
+  ];
+  const where = { cohortId };
+  if (fromDate) where.interactionStart = { [Op.gte]: fromDate };
+  if (toDate) where.interactionEnd = { [Op.lte]: toDate };
+  if (activityIds) where.activityId = { [Op.in]: activityIds };
+  const opts = { where, ...options, group, attributes, raw: true };
+  return GradedEvent.findAndCountAll(opts).then(({ rows, count }) => {
+    const items = map(rows, parseGradedResult);
     return res.jsend.success(({ items, total: count.length }));
   });
 }
@@ -61,6 +91,7 @@ function calculateDuration({ interactionStart, interactionEnd }) {
 
 module.exports = {
   listUngradedEvents,
+  listGradedEvents,
   reportUngradedEvent,
   reportGradedEvent
 };
