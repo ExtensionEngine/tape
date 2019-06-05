@@ -7,6 +7,7 @@ const invoke = require('lodash/invoke');
 const logger = require('../logger')();
 const Sequelize = require('sequelize');
 const Umzug = require('umzug');
+const utils = require('./utils');
 
 // Require models.
 const Integration = require('../../integration/integration.model');
@@ -67,6 +68,7 @@ const db = {
   Sequelize,
   sequelize,
   initialize,
+  utils,
   ...models
 };
 
