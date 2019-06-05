@@ -12,7 +12,7 @@ const jwtOptions = {
 };
 
 passport.use(new Strategy(jwtOptions, (payload, done) => {
-  return Integration.findById(payload.id)
+  return Integration.findByPk(payload.id)
     .then(user => done(null, user || false))
     .error(err => done(err, false));
 }));
