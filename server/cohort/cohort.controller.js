@@ -21,7 +21,7 @@ function listLearnerStats({ cohortId, query, options }, res) {
   const opts = { where, ...options };
   if (query.userId) where.userId = { [Op.in]: query.userId };
   return LearnerProfile.findAndCountAll(opts).then(({ rows, count }) => {
-    const items = rows.map(it => processOutput(it, query.includeGraph))
+    const items = rows.map(it => processOutput(it, query.includeGraph));
     return res.jsend.success({ items, total: count });
   });
 }

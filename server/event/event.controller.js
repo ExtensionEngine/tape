@@ -25,7 +25,7 @@ function listUngradedEvents({ cohortId, query, options }, res) {
     [...group, 'activityId'],
     [fn.count(views), 'views'],
     [fn.average('duration'), 'avgDuration'],
-    [fn.max('interactionEnd'), 'lastViewed'],
+    [fn.max('interactionEnd'), 'lastViewed']
   ];
   const where = { cohortId };
   if (fromDate) where.interactionStart = { [Op.gte]: fromDate };
