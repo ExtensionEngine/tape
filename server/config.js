@@ -1,13 +1,9 @@
 'use strict';
 
-const path = require('path');
-
 module.exports = {
   hostname: process.env.HOSTNAME,
   port: process.env.PORT,
   ip: process.env.IP,
-  useHistoryApiFallback: process.env.HISTORY_API_FALLBACK,
-  staticFolder: path.resolve(__dirname, '../dist'),
   uploadLimit: '10mb',
   cors: {
     allowedOrigins: [],
@@ -31,17 +27,5 @@ module.exports = {
     port: process.env.EMAIL_PORT || null,
     ssl: process.env.EMAIL_SSL,
     tls: process.env.EMAIL_TLS
-  },
-  storage: {
-    amazon: {
-      key: process.env.STORAGE_KEY,
-      secret: process.env.STORAGE_SECRET,
-      region: process.env.STORAGE_REGION,
-      bucket: process.env.STORAGE_BUCKET
-    },
-    filesystem: {
-      path: process.env.STORAGE_PATH
-    },
-    provider: process.env.STORAGE_PROVIDER
   }
 };

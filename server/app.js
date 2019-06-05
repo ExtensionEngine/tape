@@ -5,7 +5,6 @@ const AuthError = require('passport/lib/errors/authenticationerror');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
-const fallback = require('express-history-api-fallback');
 const helmet = require('helmet');
 const HttpError = require('http-errors').HttpError;
 const jsend = require('jsend').middleware;
@@ -25,7 +24,6 @@ app.use(cors({ origin: config.cors.allowedOrigins, credentials: true }));
 app.use(bodyParser.json({ limit: config.uploadLimit }));
 app.use(auth.initialize());
 app.use(origin());
-app.use(express.static(config.staticFolder));
 app.use(jsend);
 
 // Log http requests
@@ -54,9 +52,6 @@ app.use((err, req, res, next) => {
 });
 
 // Handle non-existing routes.
-const notFound = config.useHistoryApiFallback
-  ? fallback('index.html', { root: config.staticFolder })
-  : (_, res) => res.sendStatus(NOT_FOUND);
-app.use(notFound);
+app.use((_, res) => res.sendStatus(NOT_FOUND));
 
 module.exports = app;

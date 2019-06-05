@@ -57,6 +57,7 @@ class GradedEvent extends Model {
     return {
       tableName: 'graded_event',
       timestamps: true,
+      updatedAt: false,
       freezeTableName: true
     };
   }

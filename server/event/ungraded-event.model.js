@@ -49,6 +49,7 @@ class UngradedEvent extends Model {
     return {
       tableName: 'ungraded_event',
       timestamps: true,
+      updatedAt: false,
       freezeTableName: true
     };
   }

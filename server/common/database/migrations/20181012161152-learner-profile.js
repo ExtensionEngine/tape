@@ -15,18 +15,32 @@ module.exports = {
         field: 'cohort_id',
         allowNull: false
       },
-      nodes: {
+      progress: {
+        type: Sequelize.FLOAT,
+        defaultValue: 0,
+        allowNull: false
+      },
+      state: {
         type: Sequelize.JSONB,
+        defaultValue: {},
+        allowNull: false
+      },
+      repoState: {
+        type: Sequelize.JSONB,
+        field: 'repo_state',
+        defaultValue: {},
         allowNull: false
       },
       createdAt: {
         type: Sequelize.DATE,
         field: 'created_at',
+        defaultValue: Sequelize.fn('NOW'),
         allowNull: false
       },
       updatedAt: {
         type: Sequelize.DATE,
         field: 'updated_at',
+        defaultValue: Sequelize.fn('NOW'),
         allowNull: false
       },
       deletedAt: {
