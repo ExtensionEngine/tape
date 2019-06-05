@@ -5,8 +5,8 @@ const event = require('../event');
 const graph = require('../knowledge-graph');
 const { LearnerProfile } = require('../common/database');
 const { parseNumericParam } = require('../common/middleware');
+const { processPagination } = require('../common/pagination');
 const router = require('express').Router();
-const { setParser } = require('../common/pagination');
 
 router
   .param('cohortId', parseNumericParam)
@@ -16,7 +16,7 @@ router
   .get('/:cohortId/progress', ctrl.getCohortProgress)
   .post('/:cohortId/register', ctrl.registerLearners)
   .get('/:cohortId/learner/:learnerId', ctrl.getLearnerStats)
-  .get('/:cohortId/learner/', setParser(LearnerProfile), ctrl.listLearnerStats);
+  .get('/:cohortId/learner/', processPagination(LearnerProfile), ctrl.listLearnerStats);
 
 module.exports = {
   path: '/cohort',

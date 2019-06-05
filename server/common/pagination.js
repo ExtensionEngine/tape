@@ -9,7 +9,7 @@ const parseOptions = ({ limit, offset, sortOrder }) => ({
   sortOrder: sortOrder || 'ASC'
 });
 
-function setParser(Model) {
+function processPagination(Model) {
   return (req, _, next) => {
     const options = parseOptions(req.query);
     Object.assign(req.query, options);
@@ -23,5 +23,5 @@ function setParser(Model) {
 }
 
 module.exports = {
-  setParser
+  processPagination
 };

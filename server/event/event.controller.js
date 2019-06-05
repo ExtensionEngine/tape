@@ -17,7 +17,6 @@ const parseResult = it => ({
   views: parseInt(it.views, 10)
 });
 
-
 function listUngradedEvents({ cohortId, query, options }, res) {
   const { activityIds, uniqueViews, fromDate, toDate } = query;
   const group = [fn.column('activityId')];
