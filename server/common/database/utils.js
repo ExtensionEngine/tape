@@ -6,7 +6,7 @@ const mapValues = require('lodash/mapValues');
 
 const dbColumn = (col, Model) => {
   if (col instanceof SequelizeMethod) return col;
-  const name = get(Model, `attributes.${col}.field`, col);
+  const name = get(Model, `rawAttributes.${col}.field`, col);
   return Sequelize.col(name);
 };
 
