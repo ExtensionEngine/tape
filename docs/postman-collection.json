@@ -343,31 +343,31 @@
 	],
 	"variable": [
 		{
-			"id": "00ff8f85-8591-4b2d-8352-7daaaecac0c4",
+			"id": "216c47f8-2589-42dd-85a1-a185ac8cb278",
 			"key": "token",
-			"value": "JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6ImdvbC1sbXMiLCJpYXQiOjE1NTkyMTk3OTYsImV4cCI6MTAxOTkyMTk3OTZ9.n-Syf0F97IBsc2-HZr2PZcE72w8vOQ1-D5zesmNqUmg",
+			"value": "your_jwt_token",
 			"type": "string"
 		},
 		{
-			"id": "59828452-13c2-43af-9938-5fe48217b97c",
+			"id": "350ad6ea-0e6d-42e6-8933-3a631d750bb8",
 			"key": "baseUrl",
 			"value": "http://127.0.0.1:5000/api/v1",
 			"type": "string"
 		},
 		{
-			"id": "a3258254-28cd-4c12-a79b-1ca4cb0cef29",
+			"id": "12c9bd0e-8c30-43c1-abfe-10e39aabfaf3",
 			"key": "cohortId",
 			"value": "1",
 			"type": "string"
 		},
 		{
-			"id": "dff33512-ed96-433a-8477-da2dfe755f0e",
+			"id": "f5ae1130-f30d-4d88-8f61-6397b37abe4b",
 			"key": "repositoryId",
 			"value": "1",
 			"type": "string"
 		},
 		{
-			"id": "7bcaa040-511e-43c6-b484-e2ce526e1d95",
+			"id": "444da792-3c39-4827-a529-211621e529cd",
 			"key": "learnerId",
 			"value": "1",
 			"type": "string"
