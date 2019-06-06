@@ -22,7 +22,8 @@ const sqlFunctions = {
   max: 'MAX',
   average: 'AVG',
   count: 'COUNT',
-  distinct: 'DISTINCT'
+  distinct: 'DISTINCT',
+  sum: 'SUM'
 };
 
 module.exports = {
