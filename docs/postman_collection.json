@@ -1,0 +1,376 @@
+{
+	"info": {
+		"_postman_id": "160d85e6-8474-48c3-84eb-be7e595fd1ee",
+		"name": "TAPE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/ping",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Learners",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userIds\": [1,2,3]\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cohort",
+						"{{cohortId}}",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Graph",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"repositoryId\": 1,\n  \"nodes\": [\n    {\n      \"id\": 1,\n      \"name\": \"Competency 1\",\n      \"type\": \"COMPETENCY\",\n      \"exams\": [\n        {\n          \"id\": 100\n        },\n        {\n          \"id\": 101\n        }\n      ]\n    },\n    {\n      \"id\": 2,\n      \"name\": \"Competency 2\",\n      \"type\": \"COMPETENCY\",\n      \"exams\": [\n        {\n          \"id\": 102\n        },\n        {\n          \"id\": 103\n        }\n      ]\n    },\n    {\n      \"id\": 3,\n      \"type\": \"LEARNING_OBJECTIVE\",\n      \"name\": \"Learning Objective 1\",\n      \"relationships\": [\n        {\n          \"id\": 1,\n          \"type\": \"PARENT\"\n        }\n      ]\n    },\n    {\n      \"id\": 4,\n      \"type\": \"LEARNING_OBJECTIVE\",\n      \"name\": \"Learning Objective 2\",\n      \"relationships\": [\n        {\n          \"id\": 1,\n          \"type\": \"PARENT\"\n        }\n      ]\n    },\n    {\n      \"id\": 5,\n      \"type\": \"LEARNING_OBJECTIVE\",\n      \"name\": \"Learning Objective 3\",\n      \"relationships\": [\n        {\n          \"id\": 2,\n          \"type\": \"PARENT\"\n        }\n      ]\n    },\n    {\n      \"id\": 6,\n      \"type\": \"LEARNING_OBJECTIVE\",\n      \"name\": \"Learning Objective 4\",\n      \"relationships\": [\n        {\n          \"id\": 2,\n          \"type\": \"PARENT\"\n        }\n      ]\n    },\n    {\n      \"id\": 7,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 1\",\n      \"relationships\": [\n        {\n          \"id\": 3,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 50,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 200\n        },\n        {\n          \"id\": 201\n        },\n        {\n          \"id\": 202\n        }\n      ]\n    },\n    {\n      \"id\": 8,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 2\",\n      \"relationships\": [\n        {\n          \"id\": 3,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 51,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 203\n        },\n        {\n          \"id\": 204\n        },\n        {\n          \"id\": 205\n        }\n      ]\n    },\n    {\n      \"id\": 9,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 3\",\n      \"relationships\": [\n        {\n          \"id\": 4,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 52,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 206\n        },\n        {\n          \"id\": 207\n        },\n        {\n          \"id\": 208\n        }\n      ]\n    },\n    {\n      \"id\": 10,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 4\",\n      \"relationships\": [\n        {\n          \"id\": 4,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 53,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 209\n        },\n        {\n          \"id\": 210\n        },\n        {\n          \"id\": 211\n        }\n      ]\n    },\n    {\n      \"id\": 11,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 5\",\n      \"relationships\": [\n        {\n          \"id\": 5,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 54,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 212\n        },\n        {\n          \"id\": 213\n        },\n        {\n          \"id\": 214\n        }\n      ]\n    },\n    {\n      \"id\": 12,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 6\",\n      \"relationships\": [\n        {\n          \"id\": 5,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 55,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 215\n        },\n        {\n          \"id\": 216\n        },\n        {\n          \"id\": 217\n        }\n      ]\n    },\n    {\n      \"id\": 13,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 7\",\n      \"relationships\": [\n        {\n          \"id\": 6,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 56,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 218\n        },\n        {\n          \"id\": 219\n        },\n        {\n          \"id\": 220\n        }\n      ]\n    },\n    {\n      \"id\": 14,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 8\",\n      \"relationships\": [\n        {\n          \"id\": 6,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 57,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 221\n        },\n        {\n          \"id\": 222\n        },\n        {\n          \"id\": 223\n        }\n      ]\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/graph",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cohort",
+						"{{cohortId}}",
+						"graph"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Graph",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/graph/{{repositoryId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cohort",
+						"{{cohortId}}",
+						"graph",
+						"{{repositoryId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ungraded Event",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\t\n\t\"activityId\": 3,\n\t\"interactionStart\": 1559745048299,\n\t\"interactionEnd\": 1559745050631,\n\t\"progress\": 100,\n\t\"userId\": 1\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/event/ungraded",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cohort",
+						"{{cohortId}}",
+						"event",
+						"ungraded"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Graded Event",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\t\n\t\"activityId\": 7,\n\t\"questionId\": 200,\n\t\"userId\": 1,\n\t\"isCorrect\": \"false\",\n\t\"answer\": { \"1\": \"Answer 2\" },\n\t\"interactionStart\": 1559745048299,\n\t\"interactionEnd\": 1559745050631\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/event/graded",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cohort",
+						"{{cohortId}}",
+						"event",
+						"graded"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cohort Progress",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/progress",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cohort",
+						"{{cohortId}}",
+						"progress"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cohort Stats",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/learner",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cohort",
+						"{{cohortId}}",
+						"learner"
+					],
+					"query": [
+						{
+							"key": "userId[]",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Learner Stats",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/learner/{{learnerId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cohort",
+						"{{cohortId}}",
+						"learner",
+						"{{learnerId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ungraded Events",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/event/ungraded",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cohort",
+						"{{cohortId}}",
+						"event",
+						"ungraded"
+					],
+					"query": [
+						{
+							"key": "activityIds[]",
+							"value": "3",
+							"disabled": true
+						},
+						{
+							"key": "fromDate",
+							"value": "2019-06-01",
+							"disabled": true
+						},
+						{
+							"key": "toDate",
+							"value": "2019-06-07",
+							"disabled": true
+						},
+						{
+							"key": "uniqueViews",
+							"value": "true",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Graded Events",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/event/graded?",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cohort",
+						"{{cohortId}}",
+						"event",
+						"graded"
+					],
+					"query": [
+						{
+							"key": "questionIds[]",
+							"value": "200",
+							"disabled": true
+						},
+						{
+							"key": "activityIds[]",
+							"value": "7",
+							"disabled": true
+						},
+						{
+							"key": "fromDate",
+							"value": "2019-06-06",
+							"disabled": true
+						},
+						{
+							"key": "toDate",
+							"value": "2019-06-07",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "5d61479a-d1aa-4502-aa9a-e1358e1e4586",
+				"type": "text/javascript",
+				"exec": [
+					"pm.request.headers.add({key: 'Authorization', value: pm.variables.get('token') })",
+					"pm.request.headers.add({key: 'Content-Type', value: 'application/json' })"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "20af7b4c-e869-4610-8121-ef65bd49ac3c",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "00ff8f85-8591-4b2d-8352-7daaaecac0c4",
+			"key": "token",
+			"value": "JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6ImdvbC1sbXMiLCJpYXQiOjE1NTkyMTk3OTYsImV4cCI6MTAxOTkyMTk3OTZ9.n-Syf0F97IBsc2-HZr2PZcE72w8vOQ1-D5zesmNqUmg",
+			"type": "string"
+		},
+		{
+			"id": "59828452-13c2-43af-9938-5fe48217b97c",
+			"key": "baseUrl",
+			"value": "http://127.0.0.1:5000/api/v1",
+			"type": "string"
+		},
+		{
+			"id": "a3258254-28cd-4c12-a79b-1ca4cb0cef29",
+			"key": "cohortId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"id": "dff33512-ed96-433a-8477-da2dfe755f0e",
+			"key": "repositoryId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"id": "7bcaa040-511e-43c6-b484-e2ce526e1d95",
+			"key": "learnerId",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}
