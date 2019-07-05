@@ -16,13 +16,15 @@ const gradedFilterAttrs = ungradedFilterAttrs.concat('questionIds');
 function listUngradedEvents({ cohortId, query, options }, res) {
   const fn = utils.build(UngradedEvent);
   const group = [fn.column('activityId')];
-  const views = query.uniqueViews ? fn.distinct('userId') : fn.column('userId');
   const attributes = [
     [...group, 'activityId'],
-    [fn.count(views), 'views'],
+    [fn.count(fn.column('userId')), 'views'],
     [fn.average('duration'), 'avgDuration'],
     [fn.max('interactionEnd'), 'lastViewed']
   ];
+  if (query.uniqueViews) {
+    attributes.push([fn.count(fn.distinct('userId')), 'uniqueViews']);
+  }
   const where = getFilters({ cohortId, ...pick(query, ungradedFilterAttrs) });
   const opts = { where, ...options, group, attributes, raw: true };
   return UngradedEvent.findAndCountAll(opts).then(({ rows, count }) => {
@@ -74,7 +76,7 @@ module.exports = {
 };
 
 function parseResult(it) {
-  const intAttributes = ['views', 'submissions', 'correct'];
+  const intAttributes = ['views', 'uniqueViews', 'submissions', 'correct'];
   return Object.keys(it).reduce((acc, key) => {
     if (key === 'avgDuration') return set(acc, key, parseFloat(it[key]));
     if (intAttributes.includes(key)) return set(acc, key, parseInt(it[key], 10));
