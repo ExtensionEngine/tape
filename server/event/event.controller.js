@@ -10,7 +10,7 @@ const { Op } = Sequelize;
 const commonAttrs = ['userId', 'activityId', 'interactionStart', 'interactionEnd'];
 const ungradedAttrs = ['progress'].concat(commonAttrs);
 const gradedAttrs = ['questionId', 'isCorrect', 'answer'].concat(commonAttrs);
-const ungradedFilterAttrs = ['interactionStart', 'interactionEnd', 'activityIds'];
+const ungradedFilterAttrs = ['fromDate', 'toDate', 'activityIds'];
 const gradedFilterAttrs = ungradedFilterAttrs.concat('questionIds');
 
 function listUngradedEvents({ cohortId, query, options }, res) {
