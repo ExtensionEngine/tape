@@ -41,6 +41,10 @@ class LearnerProfile extends Model {
         defaultValue: {},
         allowNull: false
       },
+      excluded: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+      },
       createdAt: {
         type: DataTypes.DATE,
         field: 'created_at',
@@ -107,7 +111,7 @@ class LearnerProfile extends Model {
     });
     this.changed('state', true);
     this.changed('repoState', true);
-    graphService.updateCohortProgress(this.cohortId);
+    if (!this.excluded) graphService.updateCohortProgress(this.cohortId);
   }
 
   aggregateProgress(node, timestamp) {

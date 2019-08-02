@@ -1,12 +1,15 @@
 'use strict';
 
 const { LearnerProfile, Sequelize } = require('../common/database');
-const difference = require('lodash/difference');
+const differenceBy = require('lodash/differenceBy');
 const graphService = require('../knowledge-graph/graph.service');
+const find = require('lodash/find');
 const HttpStatus = require('http-status');
+const isObject = require('lodash/isObject');
 const map = require('lodash/map');
 const Op = Sequelize.Op;
 const pick = require('lodash/pick');
+const Promise = require('bluebird');
 
 const { OK } = HttpStatus;
 
@@ -41,12 +44,15 @@ function getCohortProgress({ cohortId }, res) {
 }
 
 async function registerLearners({ cohortId, body }, res) {
-  const { userIds } = body;
-  const where = { cohortId, userId: { [Op.in]: userIds } };
-  const existing = await LearnerProfile.findAll({ where, attributes: ['userId'] });
-  const diff = difference(userIds, map(existing, 'userId'));
-  return LearnerProfile.bulkCreate(map(diff, userId => ({ cohortId, userId })))
-    .then(() => res.status(OK).end());
+  const users = map(body.userIds, it => isObject(it) ? it : { userId: it });
+  users.forEach(it => (it.cohortId = cohortId));
+  const where = { cohortId, userId: { [Op.in]: map(users, 'userId') } };
+  const existing = await LearnerProfile.findAll({ where });
+  const diff = differenceBy(users, existing, 'userId');
+  await Promise.map(existing, it => it.update(find(users, { userId: it.userId })));
+  await LearnerProfile.bulkCreate(diff);
+  await graphService.updateCohortProgress(cohortId);
+  return res.status(OK).end();
 }
 
 module.exports = {

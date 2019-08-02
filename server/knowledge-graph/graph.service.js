@@ -50,7 +50,7 @@ class GraphService {
 
   async _updateCohortProgress(cohortId) {
     const { LearnerProfile } = this.db;
-    const opts = { where: { cohortId } };
+    const opts = { where: { cohortId, excluded: false } };
     const progress = await LearnerProfile.aggregate('progress', 'avg', opts);
     this.cohortGraphs[cohortId].progress = progress;
   }

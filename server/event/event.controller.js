@@ -13,7 +13,8 @@ const gradedAttrs = ['questionId', 'isCorrect', 'answer'].concat(commonAttrs);
 const ungradedFilterAttrs = ['fromDate', 'toDate', 'activityIds'];
 const gradedFilterAttrs = ungradedFilterAttrs.concat('questionIds');
 
-function listUngradedEvents({ cohortId, query, options }, res) {
+async function listUngradedEvents(req, res) {
+  const { cohortId, query, options } = req;
   const fn = utils.build(UngradedEvent);
   const group = [fn.column('activityId')];
   const attributes = [
@@ -27,13 +28,16 @@ function listUngradedEvents({ cohortId, query, options }, res) {
   }
   const where = getFilters({ cohortId, ...pick(query, ungradedFilterAttrs) });
   const opts = { where, ...options, group, attributes, raw: true };
-  return UngradedEvent.findAndCountAll(opts).then(({ rows, count }) => {
-    const items = map(rows, parseResult);
-    return res.jsend.success(({ items, total: count.length }));
-  });
+  return excludeUsers(req, opts)
+    .then(options => UngradedEvent.findAndCountAll(options)
+    .then(({ rows, count }) => {
+      const items = map(rows, parseResult);
+      return res.jsend.success(({ items, total: count.length }));
+    }));
 }
 
-function listGradedEvents({ cohortId, query, options }, res) {
+function listGradedEvents(req, res) {
+  const { cohortId, query, options } = req;
   const fn = utils.build(GradedEvent);
   const group = [fn.column('questionId'), fn.column('activityId')];
   const attributes = [
@@ -46,10 +50,12 @@ function listGradedEvents({ cohortId, query, options }, res) {
   ];
   const where = getFilters({ cohortId, ...pick(query, gradedFilterAttrs) });
   const opts = { where, ...options, group, attributes, raw: true };
-  return GradedEvent.findAndCountAll(opts).then(({ rows, count }) => {
-    const items = map(rows, parseResult);
-    return res.jsend.success(({ items, total: count.length }));
-  });
+  return excludeUsers(req, opts)
+    .then(options => GradedEvent.findAndCountAll(options)
+    .then(({ rows, count }) => {
+      const items = map(rows, parseResult);
+      return res.jsend.success(({ items, total: count.length }));
+    }));
 }
 
 async function reportUngradedEvent({ cohortId, body }, res) {
@@ -74,6 +80,15 @@ module.exports = {
   reportUngradedEvent,
   reportGradedEvent
 };
+
+async function excludeUsers(req, options) {
+  const { cohortId, query: { includeExcluded = false } } = req;
+  if (includeExcluded) return options;
+  const opts = { where: { excluded: true, cohortId }, attributes: ['userId'] };
+  const excludeUsers = await LearnerProfile.findAll(opts);
+  options.where.userId = { [Op.notIn]: map(excludeUsers, 'userId') };
+  return options;
+}
 
 function parseResult(it) {
   const intAttributes = ['views', 'uniqueViews', 'submissions', 'correct'];
