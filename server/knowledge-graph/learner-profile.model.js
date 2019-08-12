@@ -5,9 +5,12 @@ const filter = require('lodash/filter');
 const get = require('lodash/get');
 const graphService = require('./graph.service');
 const map = require('lodash/map');
+const max = require('lodash/max');
+const maxBy = require('lodash/maxBy');
 const meanBy = require('lodash/meanBy');
 const { Model } = require('sequelize');
 const pick = require('lodash/pick');
+const Promise = require('bluebird');
 const sumBy = require('lodash/sumBy');
 const toArray = require('lodash/toArray');
 
@@ -67,11 +70,6 @@ class LearnerProfile extends Model {
     return get(this.state, `${nodeId}.duration`, 0);
   }
 
-  findOrCreateNode(nodeId) {
-    if (!this.state[nodeId]) this.state[nodeId] = {};
-    return this.state[nodeId];
-  }
-
   getNodeState(nodeId) {
     return {
       ...get(this.state, nodeId, {}),
@@ -80,81 +78,63 @@ class LearnerProfile extends Model {
     };
   }
 
-  updateProgress(nodeId, progress, date) {
+  async updateState(nodeId, stats) {
     const graph = graphService.get(this.cohortId);
     const node = graph.get(nodeId);
     if (!node) throw new Error('Node does not exist within cohort graph!');
+    // if leaf node calc duration from UngradedEvents
+    if (!get(node, '_c.length')) {
+      stats.duration = await this.calculateDuration(nodeId);
+    }
+    this._setState(nodeId, stats);
+    const parents = graph.getParents(node);
+    if (parents.length) {
+      return map(parents, it => this.aggregateStats(it, stats.date));
+    } else {
+      this._updateRepoState(graph, node);
+    }
+    this.changed('state', true);
+    this.changed('repoState', true);
+    return Promise.resolve(this);
+  }
+
+  _updateRepoState(graph, node) {
+    const rootNodes = graph.getRootNodes();
+    const { repositoryId } = node;
+    const repoRootNodes = filter(rootNodes, { repositoryId });
+    this.progress = meanBy(rootNodes, ({ id }) => this.getProgress(id));
+    const progress = meanBy(repoRootNodes, ({ id }) => this.getProgress(id));
+    const duration = sumBy(repoRootNodes, ({ id }) => this.getDuration(id));
+    const lastSession = maxBy(rootNodes, 'lastSession');
+    const state = get(this, `repoState.${repositoryId}`, { id: repositoryId });
+    Object.assign(state, { progress, duration, lastSession });
+    this.set(`repoState.${repositoryId}`, state);
+  }
+
+  _setState(nodeId, { progress, date, duration }) {
+    const state = get(this, `state.${nodeId}`, {});
     progress = clamp(progress, 0, 100);
-    const state = this.findOrCreateNode(nodeId);
-    state.progress = state.progress > progress ? state.progress : progress;
+    state.progress = max([state.progress, progress]);
+    state.duration = duration;
     if (date) {
       state.startDate = state.startDate || date;
       state.lastSession = date;
       if (state.progress === 100 && !state.completedAt) state.completedAt = date;
     }
-    const parents = graph.getParents(node);
-    // If leaf node, aggregate up (parent nodes)
-    if (parents.length) {
-      parents.forEach(it => this.aggregateProgress(it, date));
-      return;
-    }
-    // If root node, aggregate accross all repositories
-    const rootNodes = graph.getRootNodes();
-    this.progress = meanBy(rootNodes, ({ id }) => this.getProgress(id));
-    const { repositoryId } = node;
-    const repoRootNodes = filter(rootNodes, { repositoryId });
-    const repoProgress = meanBy(repoRootNodes, ({ id }) => this.getProgress(id));
-    if (!this.repoState[repositoryId]) {
-      this.repoState[repositoryId] = { id: repositoryId };
-    }
-    Object.assign(this.repoState[repositoryId], {
-      progress: repoProgress,
-      lastSession: date
-    });
-    this.changed('state', true);
-    this.changed('repoState', true);
-    graphService.updateCohortProgress(this.cohortId);
+    this.set(`state.${nodeId}`, state);
   }
 
-  updateDuration(nodeId, duration) {
-    const { cohortId } = this;
-    const graph = graphService.get(cohortId);
-    const node = graph.get(nodeId);
-    if (!node) throw new Error('Node does not exist within cohort graph!');
-    const parents = graph.getParents(node);
-    // if leaf node, calc duration and aggregate up
-    if (!get(node, '_c.length')) {
-      const columns = ['userId', 'cohortId', 'activityId'];
-      const opts = {
-        where: { ...pick(this, ['userId', 'cohortId']), activityId: nodeId },
-        group: columns,
-        attributes: [
-          ...columns,
-          [this.sequelize.fn('sum', this.sequelize.col('duration')), 'duration']
-        ]
-      };
-      const UngradedEvent = this.sequelize.model('UngradedEvent');
-      return UngradedEvent.findOne(opts)
-        .then(event => this.set(`state.${nodeId}.duration`, event.duration))
-        .then(() => parents.forEach(it => this.aggregateDuration(it)));
-    }
-    this.set(`state.${nodeId}.duration`, duration);
-    if (parents.length) return parents.forEach(it => this.aggregateDuration(it));
-    const rootNodes = graph.getRootNodes();
-    const { repositoryId } = node;
-    const repoRootNodes = filter(rootNodes, { repositoryId });
-    const repoDuration = sumBy(repoRootNodes, ({ id }) => this.getDuration(id));
-    this.set(`repoState.${repositoryId}.duration`, repoDuration);
+  calculateDuration(nodeId) {
+    const UngradedEvent = this.sequelize.model('UngradedEvent');
+    const where = { ...pick(this, ['userId', 'cohortId']), activityId: nodeId };
+    return UngradedEvent.aggregate('duration', 'sum', { where });
   }
 
-  aggregateDuration(node) {
+  aggregateStats(node, timestamp) {
     const duration = sumBy(node._c, id => this.getDuration(id));
-    return this.updateDuration(node.id, duration);
-  }
-
-  aggregateProgress(node, timestamp) {
-    const progress = meanBy(node._c, id => this.getProgress(id));
-    return this.updateProgress(node.id, progress, timestamp);
+    const nesto = map(node._c, id => this.getProgress(id));
+    const progress = meanBy(nesto, it => it);
+    return this.updateState(node.id, { progress, duration, date: timestamp });
   }
 
   getGraph() {

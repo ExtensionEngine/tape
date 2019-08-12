@@ -64,10 +64,8 @@ class GraphService {
     // Will be propagated to parent nodes
     const targetNodeIds = uniq(map(leafs, '_p'));
     const targetNodes = map(targetNodeIds, id => graph.get(id));
-    profiles.forEach(profile => {
-      targetNodes.forEach(node => {
-        profile.aggregateProgress(node);
-      });
+    await Promise.map(profiles, profile => {
+      return Promise.map(targetNodes, node => profile.aggregateStats(node));
     });
     return Promise.map(profiles, it => it.save());
   }
