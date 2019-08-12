@@ -8,6 +8,7 @@ const map = require('lodash/map');
 const meanBy = require('lodash/meanBy');
 const { Model } = require('sequelize');
 const pick = require('lodash/pick');
+const sumBy = require('lodash/sumBy');
 const toArray = require('lodash/toArray');
 
 class LearnerProfile extends Model {
@@ -62,6 +63,10 @@ class LearnerProfile extends Model {
     return get(this.state, `${nodeId}.progress`, 0);
   }
 
+  getDuration(nodeId) {
+    return get(this.state, `${nodeId}.duration`, 0);
+  }
+
   findOrCreateNode(nodeId) {
     if (!this.state[nodeId]) this.state[nodeId] = {};
     return this.state[nodeId];
@@ -70,7 +75,8 @@ class LearnerProfile extends Model {
   getNodeState(nodeId) {
     return {
       ...get(this.state, nodeId, {}),
-      progress: this.getProgress(nodeId)
+      progress: this.getProgress(nodeId),
+      duration: this.getDuration(nodeId)
     };
   }
 
@@ -108,6 +114,42 @@ class LearnerProfile extends Model {
     this.changed('state', true);
     this.changed('repoState', true);
     graphService.updateCohortProgress(this.cohortId);
+  }
+
+  updateDuration(nodeId, duration) {
+    const { cohortId } = this;
+    const graph = graphService.get(cohortId);
+    const node = graph.get(nodeId);
+    if (!node) throw new Error('Node does not exist within cohort graph!');
+    const parents = graph.getParents(node);
+    // if leaf node, calc duration and aggregate up
+    if (!get(node, '_c.length')) {
+      const columns = ['userId', 'cohortId', 'activityId'];
+      const opts = {
+        where: { ...pick(this, ['userId', 'cohortId']), activityId: nodeId },
+        group: columns,
+        attributes: [
+          ...columns,
+          [this.sequelize.fn('sum', this.sequelize.col('duration')), 'duration']
+        ]
+      };
+      const UngradedEvent = this.sequelize.model('UngradedEvent');
+      return UngradedEvent.findOne(opts)
+        .then(event => this.set(`state.${nodeId}.duration`, event.duration))
+        .then(() => parents.forEach(it => this.aggregateDuration(it)));
+    }
+    this.set(`state.${nodeId}.duration`, duration);
+    if (parents.length) return parents.forEach(it => this.aggregateDuration(it));
+    const rootNodes = graph.getRootNodes();
+    const { repositoryId } = node;
+    const repoRootNodes = filter(rootNodes, { repositoryId });
+    const repoDuration = sumBy(repoRootNodes, ({ id }) => this.getDuration(id));
+    this.set(`repoState.${repositoryId}.duration`, repoDuration);
+  }
+
+  aggregateDuration(node) {
+    const duration = sumBy(node._c, id => this.getDuration(id));
+    return this.updateDuration(node.id, duration);
   }
 
   aggregateProgress(node, timestamp) {
