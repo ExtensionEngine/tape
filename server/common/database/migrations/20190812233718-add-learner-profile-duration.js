@@ -2,8 +2,11 @@
 
 const db = require('../index');
 const graphService = require('../../../knowledge-graph/graph.service');
+const mapValues = require('lodash/mapValues');
+const omit = require('lodash/omit');
 const Promise = require('bluebird');
 
+const removeDuration = state => mapValues(state, it => omit(it, ['duration']));
 const { LearnerProfile } = db;
 
 const TABLE_NAME = 'learner_profile';
@@ -25,5 +28,15 @@ module.exports = {
     });
     return Promise.map(profiles, profile => profile.save());
   },
-  down: (QI, _) => QI.removeColumn(TABLE_NAME, COLUMN_NAME)
+  down: async (QI, _) => {
+    const profiles = await LearnerProfile.findAll();
+    await Promise.map(profiles, profile => {
+      const state = removeDuration(profile.state);
+      const repoState = removeDuration(profile.repoState);
+      profile.set('state', state);
+      profile.set('repoState', repoState);
+      return profile.save();
+    });
+    return QI.removeColumn(TABLE_NAME, COLUMN_NAME);
+  }
 };
