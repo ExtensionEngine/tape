@@ -34,6 +34,11 @@ class LearnerProfile extends Model {
         defaultValue: 0,
         allowNull: false
       },
+      duration: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+        allowNull: false
+      },
       state: {
         type: DataTypes.JSONB,
         defaultValue: {},
@@ -103,6 +108,7 @@ class LearnerProfile extends Model {
     const { repositoryId } = node;
     const repoRootNodes = filter(rootNodes, { repositoryId });
     this.progress = meanBy(rootNodes, ({ id }) => this.getProgress(id));
+    this.duration = sumBy(rootNodes, ({ id }) => this.getDuration(id));
     const progress = meanBy(repoRootNodes, ({ id }) => this.getProgress(id));
     const duration = sumBy(repoRootNodes, ({ id }) => this.getDuration(id));
     const lastSession = maxBy(rootNodes, 'lastSession');
