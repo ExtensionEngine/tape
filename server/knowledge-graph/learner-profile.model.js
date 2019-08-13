@@ -138,8 +138,7 @@ class LearnerProfile extends Model {
 
   aggregateStats(node, timestamp) {
     const duration = sumBy(node._c, id => this.getDuration(id));
-    const nesto = map(node._c, id => this.getProgress(id));
-    const progress = meanBy(nesto, it => it);
+    const progress = meanBy(node._c, id => this.getProgress(id));
     return this.updateState(node.id, { progress, duration, date: timestamp });
   }
 
