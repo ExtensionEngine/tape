@@ -130,10 +130,11 @@ class LearnerProfile extends Model {
     this.set(`state.${nodeId}`, state);
   }
 
-  calculateDuration(nodeId) {
+  async calculateDuration(nodeId) {
     const UngradedEvent = this.sequelize.model('UngradedEvent');
     const where = { ...pick(this, ['userId', 'cohortId']), activityId: nodeId };
-    return UngradedEvent.aggregate('duration', 'sum', { where });
+    return UngradedEvent.aggregate('duration', 'sum', { where })
+      .then(duration => duration || 0);
   }
 
   aggregateStats(node, timestamp) {
