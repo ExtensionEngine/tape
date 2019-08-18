@@ -24,7 +24,7 @@ module.exports = {
     await Promise.map(profiles, profile => {
       const graph = graphService.get(profile.cohortId);
       const leafNodes = graph.getLeafNodes();
-      return Promise.map(leafNodes, node => profile.aggregateStats(node, null));
+      return Promise.map(leafNodes, node => profile.aggregateStats(node));
     });
     return Promise.map(profiles, profile => profile.save());
   },
