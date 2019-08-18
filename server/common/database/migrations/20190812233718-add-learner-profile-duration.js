@@ -21,16 +21,16 @@ module.exports = {
     });
     const profiles = await LearnerProfile.findAll();
     await graphService.initialize(db);
-    await Promise.map(profiles, profile => {
+    await Promise.mapSeries(profiles, profile => {
       const graph = graphService.get(profile.cohortId);
       const leafNodes = graph.getLeafNodes();
       return Promise.map(leafNodes, node => profile.aggregateStats(node));
     });
-    return Promise.map(profiles, profile => profile.save());
+    return Promise.mapSeries(profiles, profile => profile.save());
   },
   down: async (QI, _) => {
     const profiles = await LearnerProfile.findAll();
-    await Promise.map(profiles, profile => {
+    await Promise.mapSeries(profiles, profile => {
       const state = removeDuration(profile.state);
       const repoState = removeDuration(profile.repoState);
       profile.set('state', state);
