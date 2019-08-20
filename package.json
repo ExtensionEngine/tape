@@ -62,7 +62,7 @@
     "passport-jwt": "^4.0.0",
     "pg": "^7.4.3",
     "safe-require": "^1.0.3",
-    "sequelize": "^5.8.11",
+    "sequelize": "^5.15.1",
     "umzug": "^2.1.0",
     "url-join": "^4.0.0"
   },
