@@ -1,14 +1,21 @@
 'use strict';
 
 const clamp = require('lodash/clamp');
+const differenceBy = require('lodash/differenceBy');
 const filter = require('lodash/filter');
 const get = require('lodash/get');
 const graphService = require('./graph.service');
+const keyBy = require('lodash/keyBy');
 const map = require('lodash/map');
 const meanBy = require('lodash/meanBy');
-const { Model } = require('sequelize');
+const { Model, Sequelize } = require('sequelize');
 const pick = require('lodash/pick');
+const Promise = require('bluebird');
 const toArray = require('lodash/toArray');
+
+const { Op } = Sequelize;
+
+const getKey = ({ userId, cohortId }) => `${userId}-${cohortId}`;
 
 class LearnerProfile extends Model {
   static fields(DataTypes) {
@@ -127,6 +134,17 @@ class LearnerProfile extends Model {
       ...this.getNodeState(node.id)
     }));
     return { repositories: toArray(this.repoState), nodes };
+  }
+
+  static bulkUpsert(items) {
+    const where = { [Op.or]: items.map(it => pick(it, this.primaryKeyAttributes)) };
+    return this.findAll({ where }).then(existing => {
+      const updates = keyBy(items, getKey);
+      return Promise.map(existing, it => it.update(updates[getKey(it)]));
+    }).then(existing => {
+      const diff = differenceBy(items, existing, getKey);
+      return this.bulkCreate(diff);
+    });
   }
 
   static options() {
