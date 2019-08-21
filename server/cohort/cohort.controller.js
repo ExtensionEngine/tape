@@ -43,16 +43,11 @@ function getCohortProgress({ cohortId }, res) {
   });
 }
 
-async function registerLearners({ cohortId, body }, res) {
-  const users = map(body.userIds, it => isObject(it) ? it : { userId: it });
-  users.forEach(it => (it.cohortId = cohortId));
-  const where = { cohortId, userId: { [Op.in]: map(users, 'userId') } };
-  const existing = await LearnerProfile.findAll({ where });
-  const diff = differenceBy(users, existing, 'userId');
-  await Promise.map(existing, it => it.update(find(users, { userId: it.userId })));
-  await LearnerProfile.bulkCreate(diff);
-  await graphService.updateCohortProgress(cohortId);
-  return res.status(OK).end();
+function registerLearners({ cohortId, body }, res) {
+  const profiles = map(body.userIds, it => {
+    return isObject(it) ? { cohortId, ...it } : { cohortId, userId: it };
+  });
+  return LearnerProfile.bulkUpsert(profiles).then(() => res.status(OK).end());
 }
 
 module.exports = {
