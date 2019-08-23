@@ -1,15 +1,12 @@
 'use strict';
 
 const { LearnerProfile, Sequelize } = require('../common/database');
-const differenceBy = require('lodash/differenceBy');
 const graphService = require('../knowledge-graph/graph.service');
-const find = require('lodash/find');
 const HttpStatus = require('http-status');
 const isObject = require('lodash/isObject');
 const map = require('lodash/map');
 const Op = Sequelize.Op;
 const pick = require('lodash/pick');
-const Promise = require('bluebird');
 
 const { OK } = HttpStatus;
 
