@@ -10,10 +10,12 @@ const { Op } = Sequelize;
 const commonAttrs = ['userId', 'activityId', 'interactionStart', 'interactionEnd'];
 const ungradedAttrs = ['progress'].concat(commonAttrs);
 const gradedAttrs = ['questionId', 'isCorrect', 'answer'].concat(commonAttrs);
-const ungradedFilterAttrs = ['fromDate', 'toDate', 'activityIds'];
+const ungradedFilterAttrs = [
+  'fromDate', 'toDate', 'activityIds', 'includeExcluded'
+];
 const gradedFilterAttrs = ungradedFilterAttrs.concat('questionIds');
 
-async function listUngradedEvents(req, res) {
+function listUngradedEvents(req, res) {
   const { cohortId, query, options } = req;
   const fn = utils.build(UngradedEvent);
   const group = [fn.column('activityId')];
@@ -26,18 +28,16 @@ async function listUngradedEvents(req, res) {
   if (query.uniqueViews) {
     attributes.push([fn.count(fn.distinct('userId')), 'uniqueViews']);
   }
-  const where = getFilters({ cohortId, ...pick(query, ungradedFilterAttrs) });
-  const opts = { where, ...options, group, attributes, raw: true };
-  return excludeUsers(req, opts)
-    .then(options => UngradedEvent.findAndCountAll(options)
+  const opts = { ...options, group, attributes, raw: true };
+  return getFilters({ cohortId, ...pick(query, ungradedFilterAttrs) })
+    .then(where => UngradedEvent.findAndCountAll({ where, ...opts }))
     .then(({ rows, count }) => {
       const items = map(rows, parseResult);
       return res.jsend.success(({ items, total: count.length }));
-    }));
+    });
 }
 
-function listGradedEvents(req, res) {
-  const { cohortId, query, options } = req;
+function listGradedEvents({ cohortId, query, options }, res) {
   const fn = utils.build(GradedEvent);
   const group = [fn.column('questionId'), fn.column('activityId')];
   const attributes = [
@@ -48,14 +48,13 @@ function listGradedEvents(req, res) {
     [fn.average('duration'), 'avgDuration'],
     [fn.max('interactionEnd'), 'lastSubmitted']
   ];
-  const where = getFilters({ cohortId, ...pick(query, gradedFilterAttrs) });
-  const opts = { where, ...options, group, attributes, raw: true };
-  return excludeUsers(req, opts)
-    .then(options => GradedEvent.findAndCountAll(options)
+  const opts = { ...options, group, attributes, raw: true };
+  return getFilters({ cohortId, ...pick(query, gradedFilterAttrs) })
+    .then(where => GradedEvent.findAndCountAll({ where, ...opts }))
     .then(({ rows, count }) => {
       const items = map(rows, parseResult);
       return res.jsend.success(({ items, total: count.length }));
-    }));
+    });
 }
 
 async function reportUngradedEvent({ cohortId, body }, res) {
@@ -81,15 +80,6 @@ module.exports = {
   reportGradedEvent
 };
 
-async function excludeUsers(req, options) {
-  const { cohortId, query: { includeExcluded = false } } = req;
-  if (includeExcluded) return options;
-  const opts = { where: { excluded: true, cohortId }, attributes: ['userId'] };
-  const excludeUsers = await LearnerProfile.findAll(opts);
-  options.where.userId = { [Op.notIn]: map(excludeUsers, 'userId') };
-  return options;
-}
-
 function parseResult(it) {
   const intAttributes = ['views', 'uniqueViews', 'submissions', 'correct'];
   return Object.keys(it).reduce((acc, key) => {
@@ -99,14 +89,21 @@ function parseResult(it) {
   }, {});
 }
 
-function getFilters(query) {
-  const { activityIds, cohortId, fromDate, toDate, questionIds } = query;
-  const where = { cohortId };
-  if (fromDate) where.interactionStart = { [Op.gte]: fromDate };
-  if (toDate) where.interactionEnd = { [Op.lte]: toDate };
-  if (activityIds) where.activityId = { [Op.in]: activityIds };
-  if (questionIds) where.questionId = { [Op.in]: questionIds };
-  return where;
+async function getFilters(query) {
+  const {
+    activityIds, cohortId, fromDate, toDate, questionIds, includeExcluded
+  } = query;
+  const cond = { cohortId };
+  if (fromDate) cond.interactionStart = { [Op.gte]: fromDate };
+  if (toDate) cond.interactionEnd = { [Op.lte]: toDate };
+  if (activityIds) cond.activityId = { [Op.in]: activityIds };
+  if (questionIds) cond.questionId = { [Op.in]: questionIds };
+  if (includeExcluded) return cond;
+  const where = { excluded: true, cohortId };
+  const opts = { attributes: ['userId'], where, raw: true };
+  const users = await LearnerProfile.findAll(opts);
+  cond.userId = { [Op.notIn]: map(users, 'userId') };
+  return cond;
 }
 
 function calculateDuration({ interactionStart, interactionEnd }) {
