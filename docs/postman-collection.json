@@ -73,19 +73,7 @@
 			"name": "Graph",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					},
-					{
-						"key": "Authorization",
-						"value": "{{token}}",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n  \"repositoryId\": 1,\n  \"nodes\": [\n    {\n      \"id\": 1,\n      \"name\": \"Competency 1\",\n      \"type\": \"COMPETENCY\",\n      \"exams\": [\n        {\n          \"id\": 100\n        },\n        {\n          \"id\": 101\n        }\n      ]\n    },\n    {\n      \"id\": 2,\n      \"name\": \"Competency 2\",\n      \"type\": \"COMPETENCY\",\n      \"exams\": [\n        {\n          \"id\": 102\n        },\n        {\n          \"id\": 103\n        }\n      ]\n    },\n    {\n      \"id\": 3,\n      \"type\": \"LEARNING_OBJECTIVE\",\n      \"name\": \"Learning Objective 1\",\n      \"relationships\": [\n        {\n          \"id\": 1,\n          \"type\": \"PARENT\"\n        }\n      ]\n    },\n    {\n      \"id\": 4,\n      \"type\": \"LEARNING_OBJECTIVE\",\n      \"name\": \"Learning Objective 2\",\n      \"relationships\": [\n        {\n          \"id\": 1,\n          \"type\": \"PARENT\"\n        }\n      ]\n    },\n    {\n      \"id\": 5,\n      \"type\": \"LEARNING_OBJECTIVE\",\n      \"name\": \"Learning Objective 3\",\n      \"relationships\": [\n        {\n          \"id\": 2,\n          \"type\": \"PARENT\"\n        }\n      ]\n    },\n    {\n      \"id\": 6,\n      \"type\": \"LEARNING_OBJECTIVE\",\n      \"name\": \"Learning Objective 4\",\n      \"relationships\": [\n        {\n          \"id\": 2,\n          \"type\": \"PARENT\"\n        }\n      ]\n    },\n    {\n      \"id\": 7,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 1\",\n      \"relationships\": [\n        {\n          \"id\": 3,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 50,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 200\n        },\n        {\n          \"id\": 201\n        },\n        {\n          \"id\": 202\n        }\n      ]\n    },\n    {\n      \"id\": 8,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 2\",\n      \"relationships\": [\n        {\n          \"id\": 3,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 51,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 203\n        },\n        {\n          \"id\": 204\n        },\n        {\n          \"id\": 205\n        }\n      ]\n    },\n    {\n      \"id\": 9,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 3\",\n      \"relationships\": [\n        {\n          \"id\": 4,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 52,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 206\n        },\n        {\n          \"id\": 207\n        },\n        {\n          \"id\": 208\n        }\n      ]\n    },\n    {\n      \"id\": 10,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 4\",\n      \"relationships\": [\n        {\n          \"id\": 4,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 53,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 209\n        },\n        {\n          \"id\": 210\n        },\n        {\n          \"id\": 211\n        }\n      ]\n    },\n    {\n      \"id\": 11,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 5\",\n      \"relationships\": [\n        {\n          \"id\": 5,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 54,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 212\n        },\n        {\n          \"id\": 213\n        },\n        {\n          \"id\": 214\n        }\n      ]\n    },\n    {\n      \"id\": 12,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 6\",\n      \"relationships\": [\n        {\n          \"id\": 5,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 55,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 215\n        },\n        {\n          \"id\": 216\n        },\n        {\n          \"id\": 217\n        }\n      ]\n    },\n    {\n      \"id\": 13,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 7\",\n      \"relationships\": [\n        {\n          \"id\": 6,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 56,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 218\n        },\n        {\n          \"id\": 219\n        },\n        {\n          \"id\": 220\n        }\n      ]\n    },\n    {\n      \"id\": 14,\n      \"type\": \"LESSON\",\n      \"name\": \"Lesson 8\",\n      \"relationships\": [\n        {\n          \"id\": 6,\n          \"type\": \"PARENT\"\n        }\n      ],\n      \"content\": [\n        {\n          \"id\": 57,\n          \"type\": \"PAGE\"\n        }\n      ],\n      \"assessments\": [\n        {\n          \"id\": 221\n        },\n        {\n          \"id\": 222\n        },\n        {\n          \"id\": 223\n        }\n      ]\n    }\n  ]\n}"
@@ -156,14 +144,7 @@
 			"name": "Graded Event",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\t\n\t\"activityId\": 7,\n\t\"questionId\": 200,\n\t\"userId\": 1,\n\t\"isCorrect\": \"false\",\n\t\"answer\": { \"1\": \"Answer 2\" },\n\t\"interactionStart\": 1559745048299,\n\t\"interactionEnd\": 1559745050631\n}"
@@ -366,7 +347,7 @@
 			}
 		}
 	],
-	"variable": [
+  "variable": [
 		{
 			"id": "932ccdcb-ffe9-4d5d-b8d3-4800af04d78e",
 			"key": "token",
