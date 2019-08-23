@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "160d85e6-8474-48c3-84eb-be7e595fd1ee",
+		"_postman_id": "e420a376-a7d2-4bf3-96d5-e53e4ea82cf7",
 		"name": "TAPE",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -23,6 +23,38 @@
 			"response": []
 		},
 		{
+			"name": "Profiles",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"cohorts\" : [1,2,3,{ \"cohortId\": 4, \"excluded\": true },{ \"cohortId\": 5, \"excluded\": false }]\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/learners/{{learnerId}}/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"learners",
+						"{{learnerId}}",
+						"register"
+					]
+				},
+				"description": "Creating/updating multiple LearnerProfiles for specific user (as member of multiple cohorts)"
+			},
+			"response": []
+		},
+		{
 			"name": "Learners",
 			"request": {
 				"method": "POST",
@@ -36,7 +68,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"userIds\": [1,2,3]\n}"
+					"raw": "{\n\t\"users\": [1,2,3,{ \"userId\": 4, \"excluded\": true },{ \"userId\": 5, \"excluded\": false }]\n}\n"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/cohort/{{cohortId}}/register",
@@ -62,6 +94,11 @@
 						"name": "Content-Type",
 						"type": "text",
 						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
 					}
 				],
 				"body": {
@@ -193,7 +230,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/cohort/{{cohortId}}/learner",
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/learner?",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -239,7 +276,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/cohort/{{cohortId}}/event/ungraded",
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/event/ungraded?",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -343,31 +380,31 @@
 	],
 	"variable": [
 		{
-			"id": "216c47f8-2589-42dd-85a1-a185ac8cb278",
+			"id": "fc441591-b641-4fba-a3a6-7c77cf2ac85c",
 			"key": "token",
 			"value": "your_jwt_token",
 			"type": "string"
 		},
 		{
-			"id": "350ad6ea-0e6d-42e6-8933-3a631d750bb8",
+			"id": "5416a4fc-9c3f-4d74-93b1-e71ed139a184",
 			"key": "baseUrl",
 			"value": "http://127.0.0.1:5000/api/v1",
 			"type": "string"
 		},
 		{
-			"id": "12c9bd0e-8c30-43c1-abfe-10e39aabfaf3",
+			"id": "c244d120-a4c3-487e-816c-375e0a2b5820",
 			"key": "cohortId",
 			"value": "1",
 			"type": "string"
 		},
 		{
-			"id": "f5ae1130-f30d-4d88-8f61-6397b37abe4b",
+			"id": "499ddf8c-d45b-4722-8507-f005cf5ee5b9",
 			"key": "repositoryId",
 			"value": "1",
 			"type": "string"
 		},
 		{
-			"id": "444da792-3c39-4827-a529-211621e529cd",
+			"id": "a64e0e61-2136-4669-8f9b-5a9b0f67eb49",
 			"key": "learnerId",
 			"value": "1",
 			"type": "string"
