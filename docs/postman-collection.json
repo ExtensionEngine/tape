@@ -26,15 +26,7 @@
 			"name": "Profiles",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text",
-						"disabled": true
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n\t\"cohorts\" : [1,2,3,{ \"cohortId\": 4, \"excluded\": true },{ \"cohortId\": 5, \"excluded\": false }]\n}"
@@ -58,14 +50,7 @@
 			"name": "Learners",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n\t\"users\": [1,2,3,{ \"userId\": 4, \"excluded\": true },{ \"userId\": 5, \"excluded\": false }]\n}\n"
@@ -147,14 +132,7 @@
 			"name": "Ungraded Event",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\t\n\t\"activityId\": 3,\n\t\"interactionStart\": 1559745048299,\n\t\"interactionEnd\": 1559745050631,\n\t\"progress\": 100,\n\t\"userId\": 1\n}"
@@ -306,6 +284,11 @@
 							"key": "uniqueViews",
 							"value": "true",
 							"disabled": true
+						},
+						{
+							"key": "includeExcluded",
+							"value": "true",
+							"disabled": true
 						}
 					]
 				}
@@ -318,7 +301,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/cohort/{{cohortId}}/event/graded?",
+					"raw": "{{baseUrl}}/cohort/{{cohortId}}/event/graded",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -347,6 +330,11 @@
 						{
 							"key": "toDate",
 							"value": "2019-06-07",
+							"disabled": true
+						},
+						{
+							"key": "includeExcluded",
+							"value": "true",
 							"disabled": true
 						}
 					]
@@ -380,31 +368,31 @@
 	],
 	"variable": [
 		{
-			"id": "fc441591-b641-4fba-a3a6-7c77cf2ac85c",
+			"id": "932ccdcb-ffe9-4d5d-b8d3-4800af04d78e",
 			"key": "token",
 			"value": "your_jwt_token",
 			"type": "string"
 		},
 		{
-			"id": "5416a4fc-9c3f-4d74-93b1-e71ed139a184",
+			"id": "ccf70714-8b5b-4abe-b65c-850fa9de49f0",
 			"key": "baseUrl",
 			"value": "http://127.0.0.1:5000/api/v1",
 			"type": "string"
 		},
 		{
-			"id": "c244d120-a4c3-487e-816c-375e0a2b5820",
+			"id": "4e090627-2eb8-4904-a998-580c03ded393",
 			"key": "cohortId",
 			"value": "1",
 			"type": "string"
 		},
 		{
-			"id": "499ddf8c-d45b-4722-8507-f005cf5ee5b9",
+			"id": "cbe54432-9558-48f7-a3f7-e716f0673f81",
 			"key": "repositoryId",
 			"value": "1",
 			"type": "string"
 		},
 		{
-			"id": "a64e0e61-2136-4669-8f9b-5a9b0f67eb49",
+			"id": "b2beedda-1805-4ee5-89a0-f3122aa92997",
 			"key": "learnerId",
 			"value": "1",
 			"type": "string"
