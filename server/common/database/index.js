@@ -2,9 +2,11 @@
 
 const { 'migrations-path': migrationsPath } = require('../../../.sequelizerc');
 const config = require('./config');
+const filter = require('lodash/filter');
 const forEach = require('lodash/forEach');
 const invoke = require('lodash/invoke');
 const logger = require('../logger')();
+const map = require('lodash/map');
 const Sequelize = require('sequelize');
 const Umzug = require('umzug');
 const utils = require('./utils');
@@ -74,6 +76,17 @@ const db = {
 
 // Patch Sequelize#method to support getting models by class name.
 sequelize.model = name => sequelize.models[name] || db[name];
+
+// NOTE: Override `QueryInterface#bulkInsert` to support custom field names.
+const queryInterface = sequelize.getQueryInterface();
+const { bulkInsert } = queryInterface;
+queryInterface.bulkInsert = function (tableName, records, options, attributes) {
+  if (options.upsertKeys) {
+    const keys = filter(attributes, it => it.primaryKey || it.unique);
+    options.upsertKeys = map(keys, 'field');
+  }
+  return bulkInsert.call(this, tableName, records, options, attributes);
+};
 
 module.exports = db;
 

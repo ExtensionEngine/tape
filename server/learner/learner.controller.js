@@ -12,7 +12,9 @@ function registerProfiles({ body: { cohorts }, userId }, res) {
     const profile = isObject(it) ? it : { cohortId: it };
     return { ...profile, userId };
   });
-  return LearnerProfile.bulkUpsert(profiles).then(() => res.status(OK).end());
+  const updateOnDuplicate = ['excluded'];
+  return LearnerProfile.bulkCreate(profiles, { updateOnDuplicate })
+    .then(() => res.status(OK).end());
 }
 
 module.exports = { registerProfiles };

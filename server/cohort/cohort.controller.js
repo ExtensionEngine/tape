@@ -45,7 +45,9 @@ function registerLearners({ cohortId, body }, res) {
     const profile = isObject(it) ? it : { userId: it };
     return { ...profile, cohortId };
   });
-  return LearnerProfile.bulkUpsert(profiles).then(() => res.status(OK).end());
+  const updateOnDuplicate = ['excluded'];
+  return LearnerProfile.bulkCreate(profiles, { updateOnDuplicate })
+    .then(() => res.status(OK).end());
 }
 
 module.exports = {
