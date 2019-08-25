@@ -54,5 +54,5 @@ module.exports = {
       { type: 'primary key', name: 'learner_profile_pkey' }
     );
   },
-  down: (queryInterface) => queryInterface.dropTable(TABLE_NAME)
+  down: queryInterface => queryInterface.dropTable(TABLE_NAME)
 };

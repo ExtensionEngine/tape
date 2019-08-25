@@ -56,5 +56,5 @@ module.exports = {
       allowNull: false
     }
   }),
-  down: (queryInterface) => queryInterface.dropTable(TABLE_NAME)
+  down: queryInterface => queryInterface.dropTable(TABLE_NAME)
 };

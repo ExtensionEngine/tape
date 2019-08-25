@@ -1,3 +1,5 @@
+'use strict';
+
 const db = require('../common/database');
 const get = require('lodash/get');
 const HttpStatus = require('http-status');

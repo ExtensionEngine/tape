@@ -1,3 +1,5 @@
+'use strict';
+
 const filter = require('lodash/filter');
 const get = require('lodash/get');
 const keyBy = require('lodash/keyBy');
