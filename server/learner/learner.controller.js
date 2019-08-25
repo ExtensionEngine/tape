@@ -9,7 +9,8 @@ const { OK } = HttpStatus;
 
 function registerProfiles({ body: { cohorts }, userId }, res) {
   const profiles = map(cohorts, it => {
-    return isObject(it) ? { userId, ...it } : { userId, cohortId: it };
+    const profile = isObject(it) ? it : { cohortId: it };
+    return { ...profile, userId };
   });
   return LearnerProfile.bulkUpsert(profiles).then(() => res.status(OK).end());
 }

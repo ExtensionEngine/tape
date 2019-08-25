@@ -42,7 +42,8 @@ function getCohortProgress({ cohortId }, res) {
 
 function registerLearners({ cohortId, body }, res) {
   const profiles = map(body.users, it => {
-    return isObject(it) ? { cohortId, ...it } : { cohortId, userId: it };
+    const profile = isObject(it) ? it : { userId: it };
+    return { ...profile, cohortId };
   });
   return LearnerProfile.bulkUpsert(profiles).then(() => res.status(OK).end());
 }
