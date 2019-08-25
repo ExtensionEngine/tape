@@ -98,11 +98,9 @@ async function getFilters(query) {
   if (toDate) cond.interactionEnd = { [Op.lte]: toDate };
   if (activityIds) cond.activityId = { [Op.in]: activityIds };
   if (questionIds) cond.questionId = { [Op.in]: questionIds };
-  if (includeExcluded) return cond;
-  const where = { excluded: true, cohortId };
-  const opts = { attributes: ['userId'], where, raw: true };
-  const users = await LearnerProfile.findAll(opts);
-  cond.userId = { [Op.notIn]: map(users, 'userId') };
+  if (!includeExcluded) {
+    cond.userId = { [Op.notIn]: await LearnerProfile.getExcludedUserIds(cohortId) };
+  }
   return cond;
 }
 

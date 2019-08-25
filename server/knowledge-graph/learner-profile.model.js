@@ -136,6 +136,12 @@ class LearnerProfile extends Model {
     return { repositories: toArray(this.repoState), nodes };
   }
 
+  static getExcludedUserIds(cohortId) {
+    const where = { excluded: true, cohortId };
+    const options = { attributes: ['userId'], where, raw: true };
+    return this.findAll(options).then(users => map(users, ['userId']));
+  }
+
   static bulkUpsert(items) {
     const where = { [Op.or]: items.map(it => pick(it, this.primaryKeyAttributes)) };
     return this.findAll({ where }).then(existing => {
