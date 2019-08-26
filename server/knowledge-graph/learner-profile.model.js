@@ -132,7 +132,7 @@ class LearnerProfile extends Model {
   static getExcludedUserIds(cohortId) {
     const where = { excluded: true, cohortId };
     const options = { attributes: ['userId'], where, raw: true };
-    return this.findAll(options).then(users => map(users, ['userId']));
+    return this.findAll(options).then(users => map(users, 'userId'));
   }
 
   static options() {
