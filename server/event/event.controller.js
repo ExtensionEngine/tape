@@ -1,6 +1,8 @@
 const db = require('../common/database');
+const get = require('lodash/get');
 const HttpStatus = require('http-status');
 const map = require('lodash/map');
+const mapValues = require('lodash/mapValues');
 const pick = require('lodash/pick');
 const set = require('lodash/set');
 
@@ -14,25 +16,38 @@ const ungradedFilterAttrs = [
   'fromDate', 'toDate', 'activityIds', 'includeExcluded'
 ];
 const gradedFilterAttrs = ungradedFilterAttrs.concat('questionIds');
+const parser = {
+  int: arg => parseInt(arg, 10),
+  float: arg => parseFloat(arg)
+};
+
+const getAttrs = columns => map(columns, ({ val }, name) => [val, name]);
+const parseResults = (columns, rows) => {
+  return rows.map(row => mapValues(row, (value, column) => {
+    const type = get(columns, `${column}.type`);
+    return type ? parser[type](value) : value;
+  }));
+};
 
 function listUngradedEvents(req, res) {
   const { cohortId, query, options } = req;
   const fn = utils.build(UngradedEvent);
   const group = [fn.column('activityId')];
-  const attributes = [
-    [...group, 'activityId'],
-    [fn.count(fn.column('userId')), 'views'],
-    [fn.average('duration'), 'avgDuration'],
-    [fn.max('interactionEnd'), 'lastViewed']
-  ];
+  const columns = {
+    activityId: { val: fn.column('activityId') },
+    views: { val: fn.count(fn.column('userId')), type: 'int' },
+    avgDuration: { val: fn.average('duration'), type: 'float' },
+    lastViewed: { val: fn.max('interactionEnd') }
+  };
   if (query.uniqueViews) {
-    attributes.push([fn.count(fn.distinct('userId')), 'uniqueViews']);
+    const uniqueViews = { val: fn.count(fn.distinct('userId')), type: 'int' };
+    set(columns, 'uniqueViews', uniqueViews);
   }
-  const opts = { ...options, group, attributes, raw: true };
+  const opts = { ...options, group, attributes: getAttrs(columns), raw: true };
   return getFilters({ cohortId, ...pick(query, ungradedFilterAttrs) })
     .then(where => UngradedEvent.findAndCountAll({ where, ...opts }))
     .then(({ rows, count }) => {
-      const items = map(rows, parseResult);
+      const items = parseResults(columns, rows);
       return res.jsend.success(({ items, total: count.length }));
     });
 }
@@ -40,19 +55,22 @@ function listUngradedEvents(req, res) {
 function listGradedEvents({ cohortId, query, options }, res) {
   const fn = utils.build(GradedEvent);
   const group = [fn.column('questionId'), fn.column('activityId')];
-  const attributes = [
-    [fn.column('questionId'), 'questionId'],
-    [fn.column('activityId'), 'activityId'],
-    [fn.sum(Sequelize.cast(fn.column('isCorrect'), 'integer')), 'correct'],
-    [fn.count(fn.column('userId')), 'submissions'],
-    [fn.average('duration'), 'avgDuration'],
-    [fn.max('interactionEnd'), 'lastSubmitted']
-  ];
-  const opts = { ...options, group, attributes, raw: true };
+  const columns = {
+    questionId: { val: fn.column('questionId') },
+    activityId: { val: fn.column('activityId') },
+    submissions: { val: fn.count(fn.column('userId')), type: 'int' },
+    avgDuration: { val: fn.average('duration'), type: 'float' },
+    lastSubmitted: { val: fn.max('interactionEnd') },
+    correct: {
+      val: fn.sum(Sequelize.cast(fn.column('isCorrect'), 'integer')),
+      type: 'int'
+    }
+  };
+  const opts = { ...options, group, attributes: getAttrs(columns), raw: true };
   return getFilters({ cohortId, ...pick(query, gradedFilterAttrs) })
     .then(where => GradedEvent.findAndCountAll({ where, ...opts }))
     .then(({ rows, count }) => {
-      const items = map(rows, parseResult);
+      const items = parseResults(columns, rows);
       return res.jsend.success(({ items, total: count.length }));
     });
 }
@@ -79,15 +97,6 @@ module.exports = {
   reportUngradedEvent,
   reportGradedEvent
 };
-
-function parseResult(it) {
-  const intAttributes = ['views', 'uniqueViews', 'submissions', 'correct'];
-  return Object.keys(it).reduce((acc, key) => {
-    if (key === 'avgDuration') return set(acc, key, parseFloat(it[key]));
-    if (intAttributes.includes(key)) return set(acc, key, parseInt(it[key], 10));
-    return set(acc, key, it[key]);
-  }, {});
-}
 
 async function getFilters(query) {
   const {
