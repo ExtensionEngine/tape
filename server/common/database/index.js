@@ -2,11 +2,10 @@
 
 const { 'migrations-path': migrationsPath } = require('../../../.sequelizerc');
 const config = require('./config');
-const filter = require('lodash/filter');
 const forEach = require('lodash/forEach');
 const invoke = require('lodash/invoke');
 const logger = require('../logger')();
-const map = require('lodash/map');
+const reduce = require('lodash/reduce');
 const Sequelize = require('sequelize');
 const Umzug = require('umzug');
 const utils = require('./utils');
@@ -82,8 +81,11 @@ const queryInterface = sequelize.getQueryInterface();
 const { bulkInsert } = queryInterface;
 queryInterface.bulkInsert = function (tableName, records, options, attributes) {
   if (options.upsertKeys) {
-    const keys = filter(attributes, it => it.primaryKey || it.unique);
-    options.upsertKeys = map(keys, 'field');
+    options.upsertKeys = reduce(attributes, (acc, options) => {
+      const { field, primaryKey, unique } = options;
+      if (primaryKey || unique) acc.push(field);
+      return acc;
+    }, []);
   }
   return bulkInsert.call(this, tableName, records, options, attributes);
 };
