@@ -26,6 +26,7 @@ async function aggregate(profiles) {
   await graphService.initialize(db);
   await Promise.mapSeries(profiles, profile => {
     const graph = graphService.get(profile.cohortId);
+    if (!graph) return Promise.resolve();
     const leafNodes = graph.getLeafNodes();
     return Promise.map(leafNodes, node => profile.aggregateStats(node));
   });
