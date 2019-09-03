@@ -36,6 +36,7 @@ function remove(profiles) {
   return Promise.mapSeries(profiles, profile => {
     const state = removeDuration(profile.state);
     const repoState = removeDuration(profile.repoState);
+    profile.set('duration', 0);
     profile.set('state', state);
     profile.set('repoState', repoState);
     return profile.save();
