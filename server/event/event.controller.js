@@ -12,9 +12,7 @@ const { Op } = Sequelize;
 const commonAttrs = ['userId', 'activityId', 'interactionStart', 'interactionEnd'];
 const ungradedAttrs = ['progress'].concat(commonAttrs);
 const gradedAttrs = ['questionId', 'isCorrect', 'answer'].concat(commonAttrs);
-const ungradedFilterAttrs = [
-  'fromDate', 'toDate', 'activityIds', 'includeExcluded'
-];
+const ungradedFilterAttrs = ['fromDate', 'toDate', 'activityIds'];
 const gradedFilterAttrs = ungradedFilterAttrs.concat('questionIds');
 const parser = {
   int: arg => parseInt(arg, 10),
@@ -98,18 +96,13 @@ module.exports = {
   reportGradedEvent
 };
 
-async function getFilters(query) {
-  const {
-    activityIds, cohortId, fromDate, toDate, questionIds, includeExcluded
-  } = query;
+function getFilters(query) {
+  const { activityIds, cohortId, fromDate, toDate, questionIds } = query;
   const cond = { cohortId };
   if (fromDate) cond.interactionStart = { [Op.gte]: fromDate };
   if (toDate) cond.interactionEnd = { [Op.lte]: toDate };
   if (activityIds) cond.activityId = { [Op.in]: activityIds };
   if (questionIds) cond.questionId = { [Op.in]: questionIds };
-  if (!includeExcluded) {
-    cond.userId = { [Op.notIn]: await LearnerProfile.getExcludedUserIds(cohortId) };
-  }
   return cond;
 }
 

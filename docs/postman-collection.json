@@ -29,7 +29,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"cohorts\" : [1,2,3,{ \"cohortId\": 4, \"excluded\": true },{ \"cohortId\": 5, \"excluded\": false }]\n}"
+					"raw": "{\n\t\"cohorts\" : [1,2,3,{ \"cohortId\": 4, \"inCohortAnalytics\": true },{ \"cohortId\": 5, \"inCohortAnalytics\": false }]\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/learners/{{learnerId}}/register",
@@ -53,7 +53,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"users\": [1,2,3,{ \"userId\": 4, \"excluded\": true },{ \"userId\": 5, \"excluded\": false }]\n}\n"
+					"raw": "{\n\t\"users\": [1,2,3,{ \"userId\": 4, \"inCohortAnalytics\": true },{ \"userId\": 5, \"inCohortAnalytics\": false }]\n}\n"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/cohort/{{cohortId}}/register",
@@ -265,11 +265,6 @@
 							"key": "uniqueViews",
 							"value": "true",
 							"disabled": true
-						},
-						{
-							"key": "includeExcluded",
-							"value": "true",
-							"disabled": true
 						}
 					]
 				}
@@ -311,11 +306,6 @@
 						{
 							"key": "toDate",
 							"value": "2019-06-07",
-							"disabled": true
-						},
-						{
-							"key": "includeExcluded",
-							"value": "true",
 							"disabled": true
 						}
 					]

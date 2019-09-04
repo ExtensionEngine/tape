@@ -41,9 +41,10 @@ class LearnerProfile extends Model {
         defaultValue: {},
         allowNull: false
       },
-      excluded: {
+      inCohortAnalytics: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false
+        field: 'in_cohort_analytics',
+        defaultValue: true
       },
       createdAt: {
         type: DataTypes.DATE,
@@ -111,7 +112,7 @@ class LearnerProfile extends Model {
     });
     this.changed('state', true);
     this.changed('repoState', true);
-    if (!this.excluded) graphService.updateCohortProgress(this.cohortId);
+    if (this.inCohortAnalytics) graphService.updateCohortProgress(this.cohortId);
   }
 
   aggregateProgress(node, timestamp) {
@@ -127,12 +128,6 @@ class LearnerProfile extends Model {
       ...this.getNodeState(node.id)
     }));
     return { repositories: toArray(this.repoState), nodes };
-  }
-
-  static getExcludedUserIds(cohortId) {
-    const where = { excluded: true, cohortId };
-    const options = { attributes: ['userId'], where, raw: true };
-    return this.findAll(options).then(users => map(users, 'userId'));
   }
 
   static options() {
