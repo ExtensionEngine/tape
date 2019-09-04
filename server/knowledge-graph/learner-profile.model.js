@@ -130,6 +130,11 @@ class LearnerProfile extends Model {
     return { repositories: toArray(this.repoState), nodes };
   }
 
+  static getRuledOutFromAnalytics(cohortId, options) {
+    const where = { inCohortAnalytics: false, cohortId };
+    return this.findAll({ where, ...options });
+  }
+
   static options() {
     return {
       tableName: 'learner_profile',

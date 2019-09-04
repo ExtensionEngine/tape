@@ -265,6 +265,11 @@
 							"key": "uniqueViews",
 							"value": "true",
 							"disabled": true
+						},
+						{
+							"key": "includeRuledOut",
+							"value": "true",
+							"disabled": true
 						}
 					]
 				}
@@ -306,6 +311,11 @@
 						{
 							"key": "toDate",
 							"value": "2019-06-07",
+							"disabled": true
+						},
+						{
+							"key": "includeExcluded",
+							"value": "true",
 							"disabled": true
 						}
 					]

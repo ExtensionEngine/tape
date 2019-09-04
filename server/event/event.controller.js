@@ -96,13 +96,20 @@ module.exports = {
   reportGradedEvent
 };
 
-function getFilters(query) {
-  const { activityIds, cohortId, fromDate, toDate, questionIds } = query;
+async function getFilters(query) {
+  const {
+    activityIds, cohortId, fromDate, toDate, questionIds, includeRuledOut
+  } = query;
   const cond = { cohortId };
   if (fromDate) cond.interactionStart = { [Op.gte]: fromDate };
   if (toDate) cond.interactionEnd = { [Op.lte]: toDate };
   if (activityIds) cond.activityId = { [Op.in]: activityIds };
   if (questionIds) cond.questionId = { [Op.in]: questionIds };
+  if (!includeRuledOut) {
+    const options = { attributes: ['userId'], raw: true };
+    const profiles = await LearnerProfile.getRuledOutFromAnalytics(cohortId, options);
+    cond.userId = { [Op.notIn]: map(profiles, ['userId']) };
+  }
   return cond;
 }
 
