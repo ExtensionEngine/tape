@@ -12,7 +12,7 @@ const { Op } = Sequelize;
 const commonAttrs = ['userId', 'activityId', 'interactionStart', 'interactionEnd'];
 const ungradedAttrs = ['progress'].concat(commonAttrs);
 const gradedAttrs = ['questionId', 'isCorrect', 'answer'].concat(commonAttrs);
-const ungradedFilterAttrs = ['fromDate', 'toDate', 'activityIds'];
+const ungradedFilterAttrs = ['fromDate', 'toDate', 'activityIds', 'includeRuledOut'];
 const gradedFilterAttrs = ungradedFilterAttrs.concat('questionIds');
 const parser = {
   int: arg => parseInt(arg, 10),
@@ -108,7 +108,7 @@ async function getFilters(query) {
   if (!includeRuledOut) {
     const options = { attributes: ['userId'], raw: true };
     const profiles = await LearnerProfile.getRuledOutFromAnalytics(cohortId, options);
-    cond.userId = { [Op.notIn]: map(profiles, ['userId']) };
+    cond.userId = { [Op.notIn]: map(profiles, 'userId') };
   }
   return cond;
 }
