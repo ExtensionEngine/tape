@@ -94,9 +94,8 @@ class LearnerProfile extends Model {
     const parents = graph.getParents(node);
     if (parents.length) {
       return map(parents, it => this.aggregateStats(it, stats.date));
-    } else {
-      this._updateRepoState(graph, node);
     }
+    this._updateRepoState(graph, node);
     this.changed('state', true);
     this.changed('repoState', true);
     return Promise.resolve(this);
