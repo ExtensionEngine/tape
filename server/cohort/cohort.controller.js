@@ -11,7 +11,7 @@ const pick = require('lodash/pick');
 const { OK } = HttpStatus;
 
 const processOutput = (profile, includeGraph) => {
-  const output = pick(profile, ['cohortId', 'userId', 'progress']);
+  const output = pick(profile, ['cohortId', 'userId', 'progress', 'duration']);
   if (includeGraph) Object.assign(output, profile.getGraph());
   return output;
 };
