@@ -60,12 +60,10 @@ class GraphService {
     const profiles = await LearnerProfile.findAll({ where: { cohortId } });
     const graph = this.get(cohortId);
     const leafs = graph.getLeafNodes();
-    // Trigger aggregations for level above leafs
+    // Trigger aggregations for leafs
     // Will be propagated to parent nodes
-    const targetNodeIds = uniq(map(leafs, '_p'));
-    const targetNodes = map(targetNodeIds, id => graph.get(id));
     await Promise.map(profiles, profile => {
-      return Promise.map(targetNodes, node => profile.aggregateStats(node));
+      return Promise.map(leafs, node => profile.aggregateStats(node));
     });
     return Promise.map(profiles, it => it.save());
   }
