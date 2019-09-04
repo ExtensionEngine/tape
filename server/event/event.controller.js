@@ -78,7 +78,8 @@ async function reportUngradedEvent({ cohortId, body }, res) {
   const profileCond = { cohortId, userId: body.userId };
   const [profile] = await LearnerProfile.findOrCreate({ where: profileCond });
   await UngradedEvent.create({ ...data, duration: calculateDuration(body) });
-  profile.updateProgress(body.activityId, body.progress, new Date().getTime());
+  const stats = { ...pick(body, ['progress']), date: Date.now() };
+  await profile.updateState(body.activityId, stats);
   await profile.save();
   return res.status(CREATED).end();
 }
