@@ -1,4 +1,3 @@
-
 'use strict';
 
 const TABLE_NAME = 'learner_profile';
