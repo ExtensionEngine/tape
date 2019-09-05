@@ -6,7 +6,6 @@ const map = require('lodash/map');
 const Promise = require('bluebird');
 const removeBy = require('lodash/remove');
 const throttle = require('lodash/throttle');
-const uniq = require('lodash/uniq');
 
 class GraphService {
   constructor() {
@@ -17,7 +16,7 @@ class GraphService {
       this.initialize = async db => {
         this.db = db;
         const graphs = await db.RepositoryGraph.findAll();
-        graphs.forEach(it => this.add(it));
+        graphs.forEach(it => this.add(it, { updateLearnersStats: false }));
         resolve();
       };
     });
@@ -28,7 +27,7 @@ class GraphService {
     return get(find(this.graphs, { cohortId, repositoryId }), 'graph');
   }
 
-  add({ cohortId, repositoryId, nodes }) {
+  add({ cohortId, repositoryId, nodes }, { updateLearnersStats = true } = {}) {
     const graph = new Graph(repositoryId, nodes);
     const existing = find(this.graphs, { cohortId, repositoryId });
     if (existing) {
@@ -36,7 +35,7 @@ class GraphService {
     } else {
       this.graphs.push({ cohortId, repositoryId, graph });
     }
-    this._onChange(cohortId, repositoryId);
+    this._onChange(cohortId, { updateLearnersStats });
   }
 
   remove(cohortId, repositoryId) {
@@ -55,7 +54,7 @@ class GraphService {
     this.cohortGraphs[cohortId].progress = progress;
   }
 
-  async _updateLearnersProgress(cohortId) {
+  async _updateLearnersStats(cohortId) {
     const { LearnerProfile } = this.db;
     const profiles = await LearnerProfile.findAll({ where: { cohortId } });
     const graph = this.get(cohortId);
@@ -68,10 +67,10 @@ class GraphService {
     return Promise.map(profiles, it => it.save());
   }
 
-  async _onChange(cohortId) {
+  async _onChange(cohortId, { updateLearnersStats }) {
     const graphs = map(filter(this.graphs, { cohortId }), 'graph');
     this.cohortGraphs[cohortId] = Graph.merge(graphs);
-    await this._updateLearnersProgress(cohortId);
+    if (updateLearnersStats) await this._updateLearnersStats(cohortId);
     this.updateCohortProgress(cohortId);
   }
 
