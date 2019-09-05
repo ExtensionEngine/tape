@@ -1,6 +1,8 @@
 const db = require('../common/database');
+const get = require('lodash/get');
 const HttpStatus = require('http-status');
 const map = require('lodash/map');
+const mapValues = require('lodash/mapValues');
 const pick = require('lodash/pick');
 const set = require('lodash/set');
 
@@ -10,46 +12,65 @@ const { Op } = Sequelize;
 const commonAttrs = ['userId', 'activityId', 'interactionStart', 'interactionEnd'];
 const ungradedAttrs = ['progress'].concat(commonAttrs);
 const gradedAttrs = ['questionId', 'isCorrect', 'answer'].concat(commonAttrs);
-const ungradedFilterAttrs = ['fromDate', 'toDate', 'activityIds'];
+const ungradedFilterAttrs = ['fromDate', 'toDate', 'activityIds', 'includeRuledOut'];
 const gradedFilterAttrs = ungradedFilterAttrs.concat('questionIds');
+const parser = {
+  int: arg => parseInt(arg, 10),
+  float: arg => parseFloat(arg)
+};
 
-function listUngradedEvents({ cohortId, query, options }, res) {
+const getAttrs = columns => map(columns, ({ val }, name) => [val, name]);
+const parseResults = (columns, rows) => {
+  return rows.map(row => mapValues(row, (value, column) => {
+    const type = get(columns, `${column}.type`);
+    return type ? parser[type](value) : value;
+  }));
+};
+
+function listUngradedEvents(req, res) {
+  const { cohortId, query, options } = req;
   const fn = utils.build(UngradedEvent);
   const group = [fn.column('activityId')];
-  const attributes = [
-    [...group, 'activityId'],
-    [fn.count(fn.column('userId')), 'views'],
-    [fn.average('duration'), 'avgDuration'],
-    [fn.max('interactionEnd'), 'lastViewed']
-  ];
+  const columns = {
+    activityId: { val: fn.column('activityId') },
+    views: { val: fn.count(fn.column('userId')), type: 'int' },
+    avgDuration: { val: fn.average('duration'), type: 'float' },
+    lastViewed: { val: fn.max('interactionEnd') }
+  };
   if (query.uniqueViews) {
-    attributes.push([fn.count(fn.distinct('userId')), 'uniqueViews']);
+    const uniqueViews = { val: fn.count(fn.distinct('userId')), type: 'int' };
+    set(columns, 'uniqueViews', uniqueViews);
   }
-  const where = getFilters({ cohortId, ...pick(query, ungradedFilterAttrs) });
-  const opts = { where, ...options, group, attributes, raw: true };
-  return UngradedEvent.findAndCountAll(opts).then(({ rows, count }) => {
-    const items = map(rows, parseResult);
-    return res.jsend.success(({ items, total: count.length }));
-  });
+  const opts = { ...options, group, attributes: getAttrs(columns), raw: true };
+  return getFilters({ cohortId, ...pick(query, ungradedFilterAttrs) })
+    .then(where => UngradedEvent.findAndCountAll({ where, ...opts }))
+    .then(({ rows, count }) => {
+      const items = parseResults(columns, rows);
+      return res.jsend.success(({ items, total: count.length }));
+    });
 }
 
 function listGradedEvents({ cohortId, query, options }, res) {
   const fn = utils.build(GradedEvent);
   const group = [fn.column('questionId'), fn.column('activityId')];
-  const attributes = [
-    [fn.column('questionId'), 'questionId'],
-    [fn.column('activityId'), 'activityId'],
-    [fn.sum(Sequelize.cast(fn.column('isCorrect'), 'integer')), 'correct'],
-    [fn.count(fn.column('userId')), 'submissions'],
-    [fn.average('duration'), 'avgDuration'],
-    [fn.max('interactionEnd'), 'lastSubmitted']
-  ];
-  const where = getFilters({ cohortId, ...pick(query, gradedFilterAttrs) });
-  const opts = { where, ...options, group, attributes, raw: true };
-  return GradedEvent.findAndCountAll(opts).then(({ rows, count }) => {
-    const items = map(rows, parseResult);
-    return res.jsend.success(({ items, total: count.length }));
-  });
+  const columns = {
+    questionId: { val: fn.column('questionId') },
+    activityId: { val: fn.column('activityId') },
+    submissions: { val: fn.count(fn.column('userId')), type: 'int' },
+    avgDuration: { val: fn.average('duration'), type: 'float' },
+    lastSubmitted: { val: fn.max('interactionEnd') },
+    correct: {
+      val: fn.sum(Sequelize.cast(fn.column('isCorrect'), 'integer')),
+      type: 'int'
+    }
+  };
+  const opts = { ...options, group, attributes: getAttrs(columns), raw: true };
+  return getFilters({ cohortId, ...pick(query, gradedFilterAttrs) })
+    .then(where => GradedEvent.findAndCountAll({ where, ...opts }))
+    .then(({ rows, count }) => {
+      const items = parseResults(columns, rows);
+      return res.jsend.success(({ items, total: count.length }));
+    });
 }
 
 async function reportUngradedEvent({ cohortId, body }, res) {
@@ -76,23 +97,21 @@ module.exports = {
   reportGradedEvent
 };
 
-function parseResult(it) {
-  const intAttributes = ['views', 'uniqueViews', 'submissions', 'correct'];
-  return Object.keys(it).reduce((acc, key) => {
-    if (key === 'avgDuration') return set(acc, key, parseFloat(it[key]));
-    if (intAttributes.includes(key)) return set(acc, key, parseInt(it[key], 10));
-    return set(acc, key, it[key]);
-  }, {});
-}
-
-function getFilters(query) {
-  const { activityIds, cohortId, fromDate, toDate, questionIds } = query;
-  const where = { cohortId };
-  if (fromDate) where.interactionStart = { [Op.gte]: fromDate };
-  if (toDate) where.interactionEnd = { [Op.lte]: toDate };
-  if (activityIds) where.activityId = { [Op.in]: activityIds };
-  if (questionIds) where.questionId = { [Op.in]: questionIds };
-  return where;
+async function getFilters(query) {
+  const {
+    activityIds, cohortId, fromDate, toDate, questionIds, includeRuledOut
+  } = query;
+  const cond = { cohortId };
+  if (fromDate) cond.interactionStart = { [Op.gte]: fromDate };
+  if (toDate) cond.interactionEnd = { [Op.lte]: toDate };
+  if (activityIds) cond.activityId = { [Op.in]: activityIds };
+  if (questionIds) cond.questionId = { [Op.in]: questionIds };
+  if (!includeRuledOut) {
+    const options = { attributes: ['userId'], raw: true };
+    const profiles = await LearnerProfile.getRuledOutFromAnalytics(cohortId, options);
+    cond.userId = { [Op.notIn]: map(profiles, 'userId') };
+  }
+  return cond;
 }
 
 function calculateDuration({ interactionStart, interactionEnd }) {

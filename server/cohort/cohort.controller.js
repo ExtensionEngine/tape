@@ -1,9 +1,9 @@
 'use strict';
 
 const { LearnerProfile, Sequelize } = require('../common/database');
-const difference = require('lodash/difference');
 const graphService = require('../knowledge-graph/graph.service');
 const HttpStatus = require('http-status');
+const isObject = require('lodash/isObject');
 const map = require('lodash/map');
 const Op = Sequelize.Op;
 const pick = require('lodash/pick');
@@ -40,12 +40,13 @@ function getCohortProgress({ cohortId }, res) {
   });
 }
 
-async function registerLearners({ cohortId, body }, res) {
-  const { userIds } = body;
-  const where = { cohortId, userId: { [Op.in]: userIds } };
-  const existing = await LearnerProfile.findAll({ where, attributes: ['userId'] });
-  const diff = difference(userIds, map(existing, 'userId'));
-  return LearnerProfile.bulkCreate(map(diff, userId => ({ cohortId, userId })))
+function registerLearners({ cohortId, body }, res) {
+  const profiles = map(body.users, it => {
+    const profile = isObject(it) ? it : { userId: it };
+    return { ...profile, cohortId };
+  });
+  const updateOnDuplicate = ['inCohortAnalytics'];
+  return LearnerProfile.bulkCreate(profiles, { updateOnDuplicate })
     .then(() => res.status(OK).end());
 }
 

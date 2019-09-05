@@ -49,6 +49,11 @@ class LearnerProfile extends Model {
         defaultValue: {},
         allowNull: false
       },
+      inCohortAnalytics: {
+        type: DataTypes.BOOLEAN,
+        field: 'in_cohort_analytics',
+        defaultValue: true
+      },
       createdAt: {
         type: DataTypes.DATE,
         field: 'created_at',
@@ -98,6 +103,7 @@ class LearnerProfile extends Model {
     this._updateRepoState(graph, node);
     this.changed('state', true);
     this.changed('repoState', true);
+    if (this.inCohortAnalytics) graphService.updateCohortProgress(this.cohortId);
     return Promise.resolve(this);
   }
 
@@ -150,6 +156,11 @@ class LearnerProfile extends Model {
       ...this.getNodeState(node.id)
     }));
     return { repositories: toArray(this.repoState), nodes };
+  }
+
+  static getRuledOutFromAnalytics(cohortId, options) {
+    const where = { inCohortAnalytics: false, cohortId };
+    return this.findAll({ where, ...options });
   }
 
   static options() {
