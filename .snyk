@@ -1,0 +1,38 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - '@babel/core > lodash':
+        patched: '2020-05-01T03:30:20.989Z'
+    - '@babel/core > @babel/traverse > lodash':
+        patched: '2020-05-01T03:30:20.989Z'
+    - '@babel/core > @babel/helpers > @babel/traverse > lodash':
+        patched: '2020-05-01T03:30:20.989Z'
+    - '@babel/core > @babel/helpers > @babel/traverse > @babel/generator > lodash':
+        patched: '2020-05-01T03:30:20.989Z'
+    - '@babel/core > @babel/helpers > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash':
+        patched: '2020-05-01T03:30:20.989Z'
+    - '@babel/core > @babel/helpers > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash':
+        patched: '2020-05-01T03:30:20.989Z'
+    - lodash:
+        patched: '2020-05-01T03:30:20.989Z'
+    - eslint > lodash:
+        patched: '2020-05-01T03:30:20.989Z'
+    - eslint-plugin-import > lodash:
+        patched: '2020-05-01T03:30:20.989Z'
+    - sequelize-cli > lodash:
+        patched: '2020-05-01T03:30:20.989Z'
+    - inquirer > lodash:
+        patched: '2020-05-01T03:30:20.989Z'
+    - sequelize > lodash:
+        patched: '2020-05-01T03:30:20.989Z'
+    - umzug > lodash:
+        patched: '2020-05-01T03:30:20.989Z'
+    - eslint > inquirer > lodash:
+        patched: '2020-05-01T03:30:20.989Z'
+    - eslint > table > lodash:
+        patched: '2020-05-01T03:30:20.989Z'
+    - sequelize-cli > umzug > lodash:
+        patched: '2020-05-01T03:30:20.989Z'

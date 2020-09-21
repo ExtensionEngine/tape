@@ -12,7 +12,9 @@
     "lint": "eslint --ext .js server",
     "debug": "nodemon --inspect-brk -r dotenv/config ./server | bunyan",
     "start": "NODE_ENV=production node -r dotenv/config ./server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -65,10 +67,12 @@
     "safe-require": "^1.0.3",
     "sequelize": "^5.16.0",
     "umzug": "^2.1.0",
-    "url-join": "^4.0.0"
+    "url-join": "^4.0.0",
+    "snyk": "^1.316.1"
   },
   "engines": {
     "node": ">= 8.11.0",
     "npm": ">= 5.8.0"
-  }
+  },
+  "snyk": true
 }
