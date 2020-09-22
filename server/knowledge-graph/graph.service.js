@@ -40,7 +40,7 @@ class GraphService {
 
   remove(cohortId, repositoryId) {
     removeBy(this.graphs, { cohortId, repositoryId });
-    this._onChange(cohortId);
+    this._onChange(cohortId, { updateLearnersStats: true });
   }
 
   getCohortProgress(cohortId) {
@@ -67,7 +67,7 @@ class GraphService {
     return Promise.map(profiles, it => it.save());
   }
 
-  async _onChange(cohortId, { updateLearnersStats }) {
+  async _onChange(cohortId, { updateLearnersStats } = {}) {
     const graphs = map(filter(this.graphs, { cohortId }), 'graph');
     this.cohortGraphs[cohortId] = Graph.merge(graphs);
     if (updateLearnersStats) await this._updateLearnersStats(cohortId);
