@@ -8,7 +8,7 @@ const { LearnerProfile } = db;
 
 LearnerProfile.findAll()
   .then(profiles => aggregateStats(profiles))
-  .then(() => console.log(`Learners' stats successfully aggregated`))
+  .then(() => console.log("Learner's stats successfully aggregated"))
   .catch(err => console.error(err.message) || 1)
   .then((code = 0) => process.exit(code));
 

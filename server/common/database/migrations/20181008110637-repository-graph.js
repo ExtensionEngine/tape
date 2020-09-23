@@ -42,5 +42,5 @@ module.exports = {
       { type: 'primary key', name: 'repo_graph_pkey' }
     );
   },
-  down: (queryInterface) => queryInterface.dropTable(TABLE_NAME)
+  down: queryInterface => queryInterface.dropTable(TABLE_NAME)
 };
