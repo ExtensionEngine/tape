@@ -1,5 +1,6 @@
 'use strict';
 
+const chunk = require('lodash/chunk');
 const filter = require('lodash/filter');
 const find = require('lodash/find');
 const get = require('lodash/get');
@@ -8,6 +9,8 @@ const map = require('lodash/map');
 const Promise = require('bluebird');
 const removeBy = require('lodash/remove');
 const throttle = require('lodash/throttle');
+
+const CHUNK_SIZE = 10;
 
 class GraphService {
   constructor() {
@@ -63,10 +66,14 @@ class GraphService {
     const leafs = graph.getLeafNodes();
     // Trigger aggregations for leafs
     // Will be propagated to parent nodes
-    await Promise.map(profiles, profile => {
-      return Promise.map(leafs, node => profile.aggregateStats(node));
+    return Promise.each(chunk(profiles, CHUNK_SIZE), profilesChunk => {
+      return Promise.map(profilesChunk, async profile => {
+        await Promise.each(chunk(leafs, CHUNK_SIZE), leafsChunk => {
+          return Promise.map(leafsChunk, node => profile.aggregateStats(node));
+        });
+        return profile.save();
+      });
     });
-    return Promise.map(profiles, it => it.save());
   }
 
   async _onChange(cohortId, { updateLearnersStats } = {}) {
