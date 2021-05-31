@@ -27,7 +27,7 @@
     "@babel/core": "^7.1.0",
     "@extensionengine/eslint-config": "^1.0.1",
     "babel-eslint": "^10.0.3",
-    "del-cli": "^1.1.0",
+    "del-cli": "^3.0.1",
     "emoji-strip": "^1.0.1",
     "eslint": "^6.5.1",
     "eslint-config-semistandard": "^15.0.0",
