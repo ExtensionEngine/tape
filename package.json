@@ -6,6 +6,7 @@
     "dev": "nodemon -r dotenv/config ./server | bunyan",
     "db": "node -r dotenv/config ./server/script/sequelize",
     "db:reset": "npm run db drop && npm run db create && npm run db migrate",
+    "db:migration:up": "npm run db migrate",
     "db:seed": "npm run db seed:all",
     "add:integration": "node  -r dotenv/config ./server/script/add-integration.js",
     "profiles:aggregate-stats": "node  -r dotenv/config ./server/script/aggregate-stats.js",
