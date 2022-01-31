@@ -36,11 +36,11 @@ module.exports = {
         field: 'deleted_at'
       }
     });
-    await queryInterface.addConstraint(
-      TABLE_NAME,
-      ['repository_id', 'cohort_id'],
-      { type: 'primary key', name: 'repo_graph_pkey' }
-    );
+    await queryInterface.addConstraint(TABLE_NAME, {
+      type: 'primary key',
+      name: 'repo_graph_pkey',
+      fields: ['repository_id', 'cohort_id']
+    });
   },
   down: queryInterface => queryInterface.dropTable(TABLE_NAME)
 };
