@@ -62,7 +62,7 @@
     "lodash": "^4.17.19",
     "morgan": "^1.9.1",
     "nocache": "^2.0.0",
-    "passport": "^0.4.0",
+    "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "pg": "^7.12.1",
     "safe-require": "^1.0.3",
