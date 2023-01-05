@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/ExtensionEngine/tape#readme",
   "devDependencies": {
-    "@babel/core": "^7.1.0",
+    "@babel/core": "^7.20.12",
     "@extensionengine/eslint-config": "^1.0.1",
     "babel-eslint": "^10.0.3",
     "del-cli": "^1.1.0",
